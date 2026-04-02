@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>FitFlow — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f5f4;
+      --surface: #ffffff;
+      --text: #1a1a1a;
+      --text-2: #6b7280;
+      --text-3: #9ca3af;
+      --primary: #4f46e5;
+      --primary-light: #eef2ff;
+      --primary-dark: #4338ca;
+      --accent: #10b981;
+      --accent-light: #ecfdf5;
+      --orange: #f59e0b;
+      --orange-light: #fffbeb;
+      --rose: #f43f5e;
+      --sky: #0ea5e9;
+      --border: #e5e7eb;
+      --border-light: #f3f4f6;
+      --font-h: 'Plus Jakarta Sans', sans-serif;
+      --font-b: 'DM Sans', sans-serif;
+      --r-sm: 8px;
+      --r-md: 12px;
+      --r-lg: 16px;
+      --r-xl: 20px;
+      --r-2xl: 28px;
+      --r-full: 9999px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.05);
+      --shadow-md: 0 4px 16px rgba(0,0,0,.07);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,.10);
+      --bottom-nav-h: 72px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: var(--font-b);
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.5;
+      padding-bottom: calc(var(--bottom-nav-h) + 16px);
+      overflow-x: hidden;
+    }
+    button { font-family: var(--font-b); cursor: pointer; border: none; background: none; }
+
+    /* ═══════════════════════════════════
+       TOP BAR — compact, minimal
+       ═══════════════════════════════════ */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(245,245,244,.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .topbar-avatar {
+      width: 38px;
+      height: 38px;
+      background: var(--primary-light);
+      border: 2px solid var(--primary);
+      border-radius: var(--r-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .topbar-greeting {
+      font-family: var(--font-h);
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .topbar-date {
+      font-size: 0.75rem;
+      color: var(--text-3);
+    }
+
+    .topbar-right {
+      display: flex;
+      gap: 8px;
+    }
+
+    .topbar-btn {
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--r-full);
+      font-size: 1rem;
+      transition: all .15s;
+    }
+
+    .topbar-btn:hover { background: var(--border-light); }
+
+    /* ═══════════════════════════════════
+       CONTENT SCROLL AREA
+       ═══════════════════════════════════ */
+    .content {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ═══════════════════════════════════
+       1. PRIMARY ACTION HERO
+       ═══════════════════════════════════ */
+    .hero-action {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      border-radius: var(--r-2xl);
+      padding: 28px 24px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-action::after {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 160px;
+      height: 160px;
+      background: rgba(255,255,255,.06);
+      border-radius: 50%;
+    }
+
+    .hero-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      opacity: .7;
+      margin-bottom: 6px;
+    }
+
+    .hero-title {
+      font-family: var(--font-h);
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .hero-meta {
+      font-size: 0.82rem;
+      opacity: .7;
+      margin-bottom: 20px;
+    }
+
+    .hero-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px;
+      background: #fff;
+      color: var(--primary);
+      font-family: var(--font-h);
+      font-weight: 800;
+      font-size: 1rem;
+      border-radius: var(--r-lg);
+      transition: all .15s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-cta:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 24px rgba(0,0,0,.2);
+    }
+
+    .hero-cta .play-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: var(--r-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+
+    /* ═══════════════════════════════════
+       2. QUICK STATS — compact pill row
+       ═══════════════════════════════════ */
+    .quick-stats {
+      display: flex;
+      gap: 10px;
+    }
+
+    .stat-pill {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--r-md);
+      padding: 14px 12px;
+      text-align: center;
+      transition: all .15s;
+    }
+
+    .stat-pill:hover { border-color: var(--border); }
+
+    .stat-pill-value {
+      font-family: var(--font-h);
+      font-weight: 800;
+      font-size: 1.15rem;
+      display: block;
+    }
+
+    .stat-pill-label {
+      font-size: 0.68rem;
+      color: var(--text-3);
+      margin-top: 1px;
+    }
+
+    /* ═══════════════════════════════════
+       3. FOCUS SECTION — Interactive Workout
+       ═══════════════════════════════════ */
+    .focus-section {
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--r-xl);
+      overflow: hidden;
+    }
+
+    .focus-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 20px 0;
+    }
+
+    .focus-title {
+      font-family: var(--font-h);
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .focus-progress {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-light);
+      padding: 4px 12px;
+      border-radius: var(--r-full);
+    }
+
+    .focus-progress-bar {
+      margin: 14px 20px 0;
+      height: 5px;
+      background: var(--border-light);
+      border-radius: var(--r-full);
+      overflow: hidden;
+    }
+
+    .focus-progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: var(--r-full);
+      transition: width .4s ease;
+    }
+
+    .exercise-list {
+      padding: 12px 12px 12px;
+    }
+
+    .exercise-item {
+      border-radius: var(--r-md);
+      transition: all .15s;
+      overflow: hidden;
+    }
+
+    .exercise-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .exercise-row:hover { background: var(--border-light); border-radius: var(--r-md); }
+
+    .exercise-check {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--border);
+      border-radius: var(--r-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: transparent;
+      flex-shrink: 0;
+      transition: all .2s;
+    }
+
+    .exercise-check.done {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .exercise-info { flex: 1; min-width: 0; }
+
+    .exercise-name {
+      font-family: var(--font-h);
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    .exercise-name.completed { text-decoration: line-through; color: var(--text-3); }
+
+    .exercise-prescription {
+      font-size: 0.75rem;
+      color: var(--text-3);
+    }
+
+    .exercise-expand-icon {
+      font-size: 0.8rem;
+      color: var(--text-3);
+      transition: transform .2s;
+      padding: 4px;
+    }
+
+    .exercise-item.open .exercise-expand-icon { transform: rotate(180deg); }
+
+    /* Expanded set tracker */
+    .set-tracker {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .3s ease;
+      padding: 0 12px;
+    }
+
+    .exercise-item.open .set-tracker {
+      max-height: 400px;
+      padding: 0 12px 14px;
+    }
+
+    .set-tracker-inner {
+      background: var(--bg);
+      border-radius: var(--r-md);
+      padding: 14px;
+    }
+
+    .set-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+    }
+
+    .set-row + .set-row { border-top: 1px solid var(--border-light); }
+
+    .set-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-3);
+      width: 40px;
+      flex-shrink: 0;
+    }
+
+    .set-input {
+      width: 60px;
+      padding: 7px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      font-family: var(--font-b);
+      font-size: 0.82rem;
+      text-align: center;
+      background: var(--surface);
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    .set-input:focus { border-color: var(--primary); }
+
+    .set-unit {
+      font-size: 0.72rem;
+      color: var(--text-3);
+    }
+
+    .set-done-btn {
+      margin-left: auto;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--r-full);
+      font-size: 0.7rem;
+      transition: all .15s;
+      border: 2px solid var(--border);
+      color: var(--text-3);
+    }
+
+    .set-done-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .set-done-btn.checked { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* ═══════════════════════════════════
+       4. AI TIP — single compact card
+       ═══════════════════════════════════ */
+    .ai-tip {
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--r-xl);
+      padding: 18px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .ai-tip-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary-light);
+      border-radius: var(--r-md);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .ai-tip-label {
+      font-family: var(--font-h);
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      margin-bottom: 3px;
+    }
+
+    .ai-tip-text {
+      font-size: 0.85rem;
+      color: var(--text-2);
+      line-height: 1.5;
+    }
+
+    .ai-tip-action {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-top: 6px;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .ai-tip-action:hover { text-decoration: underline; }
+
+    /* ═══════════════════════════════════
+       5. SECONDARY — collapsed nutrition
+       ═══════════════════════════════════ */
+    .secondary-card {
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--r-xl);
+      overflow: hidden;
+    }
+
+    .secondary-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 18px 20px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+
+    .secondary-toggle:hover { background: var(--border-light); }
+
+    .secondary-toggle-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .secondary-icon {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--r-sm);
+      font-size: 1rem;
+    }
+
+    .secondary-toggle-title {
+      font-family: var(--font-h);
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    .secondary-toggle-sub {
+      font-size: 0.72rem;
+      color: var(--text-3);
+    }
+
+    .secondary-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--r-full);
+    }
+
+    .secondary-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .3s ease;
+    }
+
+    .secondary-card.open .secondary-body {
+      max-height: 500px;
+    }
+
+    .secondary-card.open .secondary-chevron {
+      transform: rotate(180deg);
+    }
+
+    .secondary-chevron {
+      font-size: 0.8rem;
+      color: var(--text-3);
+      transition: transform .2s;
+    }
+
+    .secondary-body-inner {
+      padding: 0 20px 20px;
+    }
+
+    /* Nutrition mini layout */
+    .nutrition-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .nutrition-ring-wrap {
+      width: 72px;
+      height: 72px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .nutrition-ring-wrap svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .nutrition-ring-wrap circle { fill: none; stroke-width: 7; stroke-linecap: round; }
+    .nr-bg { stroke: var(--border-light); }
+    .nr-fill { stroke: var(--primary); }
+
+    .nutrition-ring-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nr-val { font-family: var(--font-h); font-weight: 800; font-size: 0.85rem; line-height: 1; }
+    .nr-unit { font-size: 0.58rem; color: var(--text-3); }
+
+    .macro-mini-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .macro-mini {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .macro-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: var(--r-full);
+      flex-shrink: 0;
+    }
+
+    .macro-mini-text {
+      font-size: 0.78rem;
+      color: var(--text-2);
+    }
+
+    .macro-mini-val {
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-left: auto;
+    }
+
+    .quick-log-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 11px;
+      background: var(--bg);
+      border-radius: var(--r-sm);
+      font-family: var(--font-h);
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: var(--primary);
+      transition: all .15s;
+    }
+
+    .quick-log-btn:hover { background: var(--primary-light); }
+
+    /* ═══════════════════════════════════
+       BOTTOM NAVIGATION
+       ═══════════════════════════════════ */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--bottom-nav-h);
+      background: var(--surface);
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 8px;
+      padding-bottom: env(safe-area-inset-bottom, 8px);
+      z-index: 100;
+    }
+
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 8px 16px;
+      border-radius: var(--r-md);
+      transition: all .15s;
+      min-width: 56px;
+    }
+
+    .nav-tab:hover { background: var(--border-light); }
+
+    .nav-tab-icon {
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .nav-tab-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--text-3);
+    }
+
+    .nav-tab.active .nav-tab-label { color: var(--primary); }
+    .nav-tab.active { background: var(--primary-light); }
+
+    /* ═══════════════════════════════════
+       ANIMATIONS
+       ═══════════════════════════════════ */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-action { animation: fadeInUp .4s ease-out; }
+    .quick-stats { animation: fadeInUp .4s ease-out .05s both; }
+    .focus-section { animation: fadeInUp .4s ease-out .1s both; }
+    .ai-tip { animation: fadeInUp .4s ease-out .15s both; }
+    .secondary-card { animation: fadeInUp .4s ease-out .2s both; }
+
+    /* ═══════════════════════════════════
+       DESKTOP CONSTRAINT
+       ═══════════════════════════════════ */
+    @media (min-width: 600px) {
+      .content { padding: 0 24px; }
+      .bottom-nav {
+        max-width: 540px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: var(--r-xl) var(--r-xl) 0 0;
+        border: 1px solid var(--border-light);
+        border-bottom: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════
+       TOP BAR
+       ═══════════════════════════════ -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-avatar">🏋️</div>
+      <div>
+        <div class="topbar-greeting">Hey, Nicholas</div>
+        <div class="topbar-date">Saturday, Mar 21</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" title="Notifications">🔔</button>
+      <button class="topbar-btn" title="Settings">⚙️</button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════
+       SCROLLABLE CONTENT
+       ═══════════════════════════════ -->
+  <div class="content">
+
+    <!-- 1. PRIMARY ACTION HERO -->
+    <section class="hero-action">
+      <div class="hero-label">Today's Workout</div>
+      <div class="hero-title">Upper Body — Push</div>
+      <div class="hero-meta">5 exercises · ~45 min</div>
+      <button class="hero-cta" onclick="scrollToWorkout()">
+        <span class="play-icon">▶</span>
+        Start Workout
+      </button>
+    </section>
+
+    <!-- 2. QUICK STATS — compact pills -->
+    <section class="quick-stats">
+      <div class="stat-pill">
+        <span class="stat-pill-value">🔥 1,420</span>
+        <span class="stat-pill-label">kcal eaten</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-pill-value">⚡ 5</span>
+        <span class="stat-pill-label">day streak</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-pill-value">⚖️ 165</span>
+        <span class="stat-pill-label">lbs</span>
+      </div>
+    </section>
+
+    <!-- 3. FOCUS SECTION — Interactive Workout -->
+    <section class="focus-section" id="workoutSection">
+      <div class="focus-header">
+        <span class="focus-title">Workout Plan</span>
+        <span class="focus-progress" id="progressLabel">0 / 5 done</span>
+      </div>
+      <div class="focus-progress-bar">
+        <div class="focus-progress-fill" id="progressBar" style="width: 0%"></div>
+      </div>
+
+      <div class="exercise-list" id="exerciseList">
+
+        <!-- Exercise 1 -->
+        <div class="exercise-item" data-exercise="0">
+          <div class="exercise-row" onclick="toggleExercise(0)">
+            <div class="exercise-check" id="check-0" onclick="event.stopPropagation(); completeExercise(0)">✓</div>
+            <div class="exercise-info">
+              <div class="exercise-name" id="name-0">Bench Press</div>
+              <div class="exercise-prescription">4 sets × 8 reps</div>
+            </div>
+            <span class="exercise-expand-icon">▾</span>
+          </div>
+          <div class="set-tracker">
+            <div class="set-tracker-inner">
+              <div class="set-row">
+                <span class="set-label">Set 1</span>
+                <input class="set-input" type="number" value="155" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="8" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+              <div class="set-row">
+                <span class="set-label">Set 2</span>
+                <input class="set-input" type="number" value="155" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="8" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+              <div class="set-row">
+                <span class="set-label">Set 3</span>
+                <input class="set-input" type="number" value="155" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="8" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+              <div class="set-row">
+                <span class="set-label">Set 4</span>
+                <input class="set-input" type="number" value="155" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="8" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercise 2 -->
+        <div class="exercise-item" data-exercise="1">
+          <div class="exercise-row" onclick="toggleExercise(1)">
+            <div class="exercise-check" id="check-1" onclick="event.stopPropagation(); completeExercise(1)">✓</div>
+            <div class="exercise-info">
+              <div class="exercise-name" id="name-1">Overhead Press</div>
+              <div class="exercise-prescription">3 sets × 10 reps</div>
+            </div>
+            <span class="exercise-expand-icon">▾</span>
+          </div>
+          <div class="set-tracker">
+            <div class="set-tracker-inner">
+              <div class="set-row">
+                <span class="set-label">Set 1</span>
+                <input class="set-input" type="number" value="85" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="10" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+              <div class="set-row">
+                <span class="set-label">Set 2</span>
+                <input class="set-input" type="number" value="85" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="10" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+              <div class="set-row">
+                <span class="set-label">Set 3</span>
+                <input class="set-input" type="number" value="85" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="10" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercise 3 -->
+        <div class="exercise-item" data-exercise="2">
+          <div class="exercise-row" onclick="toggleExercise(2)">
+            <div class="exercise-check" id="check-2" onclick="event.stopPropagation(); completeExercise(2)">✓</div>
+            <div class="exercise-info">
+              <div class="exercise-name" id="name-2">Incline DB Press</div>
+              <div class="exercise-prescription">3 sets × 12 reps</div>
+            </div>
+            <span class="exercise-expand-icon">▾</span>
+          </div>
+          <div class="set-tracker">
+            <div class="set-tracker-inner">
+              <div class="set-row">
+                <span class="set-label">Set 1</span>
+                <input class="set-input" type="number" value="50" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="12" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+              <div class="set-row">
+                <span class="set-label">Set 2</span>
+                <input class="set-input" type="number" value="50" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="12" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+              <div class="set-row">
+                <span class="set-label">Set 3</span>
+                <input class="set-input" type="number" value="50" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="12" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercise 4 -->
+        <div class="exercise-item" data-exercise="3">
+          <div class="exercise-row" onclick="toggleExercise(3)">
+            <div class="exercise-check" id="check-3" onclick="event.stopPropagation(); completeExercise(3)">✓</div>
+            <div class="exercise-info">
+              <div class="exercise-name" id="name-3">Lateral Raises</div>
+              <div class="exercise-prescription">4 sets × 15 reps</div>
+            </div>
+            <span class="exercise-expand-icon">▾</span>
+          </div>
+          <div class="set-tracker">
+            <div class="set-tracker-inner">
+              <div class="set-row">
+                <span class="set-label">Set 1</span>
+                <input class="set-input" type="number" value="20" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="15" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+              <div class="set-row">
+                <span class="set-label">Set 2</span>
+                <input class="set-input" type="number" value="20" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="15" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+              <div class="set-row">
+                <span class="set-label">Set 3</span>
+                <input class="set-input" type="number" value="20" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="15" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+              <div class="set-row">
+                <span class="set-label">Set 4</span>
+                <input class="set-input" type="number" value="20" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="15" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercise 5 -->
+        <div class="exercise-item" data-exercise="4">
+          <div class="exercise-row" onclick="toggleExercise(4)">
+            <div class="exercise-check" id="check-4" onclick="event.stopPropagation(); completeExercise(4)">✓</div>
+            <div class="exercise-info">
+              <div class="exercise-name" id="name-4">Tricep Pushdowns</div>
+              <div class="exercise-prescription">3 sets × 12 reps</div>
+            </div>
+            <span class="exercise-expand-icon">▾</span>
+          </div>
+          <div class="set-tracker">
+            <div class="set-tracker-inner">
+              <div class="set-row">
+                <span class="set-label">Set 1</span>
+                <input class="set-input" type="number" value="40" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="12" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+              <div class="set-row">
+                <span class="set-label">Set 2</span>
+                <input class="set-input" type="number" value="40" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="12" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+              <div class="set-row">
+                <span class="set-label">Set 3</span>
+                <input class="set-input" type="number" value="40" /><span class="set-unit">lbs</span>
+                <input class="set-input" type="number" value="12" /><span class="set-unit">reps</span>
+                <button class="set-done-btn" onclick="toggleSet(this)">✓</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 4. AI TIP — single actionable insight -->
+    <section class="ai-tip">
+      <div class="ai-tip-icon">🤖</div>
+      <div>
+        <div class="ai-tip-label">AI Coach</div>
+        <div class="ai-tip-text">Your bench has gone up 10 lbs this month. Try 160 lbs today — drop to 3×6 to adjust.</div>
+        <span class="ai-tip-action">Tell me more →</span>
+      </div>
+    </section>
+
+    <!-- 5. SECONDARY — Nutrition (collapsed) -->
+    <section class="secondary-card" id="nutritionCard">
+      <button class="secondary-toggle" onclick="toggleSecondary('nutritionCard')">
+        <div class="secondary-toggle-left">
+          <div class="secondary-icon" style="background: var(--orange-light)">🔥</div>
+          <div>
+            <div class="secondary-toggle-title">Nutrition</div>
+            <div class="secondary-toggle-sub">1,420 / 2,200 kcal</div>
+          </div>
+        </div>
+        <span class="secondary-chevron">▾</span>
+      </button>
+      <div class="secondary-body">
+        <div class="secondary-body-inner">
+          <div class="nutrition-row">
+            <div class="nutrition-ring-wrap">
+              <svg viewBox="0 0 100 100">
+                <circle class="nr-bg" cx="50" cy="50" r="40" />
+                <circle class="nr-fill" cx="50" cy="50" r="40"
+                  stroke-dasharray="251"
+                  stroke-dashoffset="90" />
+              </svg>
+              <div class="nutrition-ring-center">
+                <span class="nr-val">64%</span>
+                <span class="nr-unit">daily</span>
+              </div>
+            </div>
+            <div class="macro-mini-list">
+              <div class="macro-mini">
+                <span class="macro-dot" style="background: var(--primary)"></span>
+                <span class="macro-mini-text">Protein</span>
+                <span class="macro-mini-val">108 / 150g</span>
+              </div>
+              <div class="macro-mini">
+                <span class="macro-dot" style="background: var(--orange)"></span>
+                <span class="macro-mini-text">Carbs</span>
+                <span class="macro-mini-val">138 / 250g</span>
+              </div>
+              <div class="macro-mini">
+                <span class="macro-dot" style="background: var(--accent)"></span>
+                <span class="macro-mini-text">Fat</span>
+                <span class="macro-mini-val">42 / 70g</span>
+              </div>
+            </div>
+          </div>
+          <button class="quick-log-btn">+ Log a meal</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECONDARY — Progress (collapsed) -->
+    <section class="secondary-card" id="progressCard">
+      <button class="secondary-toggle" onclick="toggleSecondary('progressCard')">
+        <div class="secondary-toggle-left">
+          <div class="secondary-icon" style="background: var(--primary-light)">📊</div>
+          <div>
+            <div class="secondary-toggle-title">Weekly Progress</div>
+            <div class="secondary-toggle-sub">4 workouts · avg 2,100 kcal/day</div>
+          </div>
+        </div>
+        <span class="secondary-chevron">▾</span>
+      </button>
+      <div class="secondary-body">
+        <div class="secondary-body-inner">
+          <div class="nutrition-row" style="gap: 20px;">
+            <div style="text-align: center; flex: 1;">
+              <div style="font-family: var(--font-h); font-weight: 800; font-size: 1.3rem;">↓ 0.5 lbs</div>
+              <div style="font-size: .72rem; color: var(--text-3);">weight this week</div>
+            </div>
+            <div style="text-align: center; flex: 1;">
+              <div style="font-family: var(--font-h); font-weight: 800; font-size: 1.3rem;">+10 lbs</div>
+              <div style="font-size: .72rem; color: var(--text-3);">bench PR</div>
+            </div>
+            <div style="text-align: center; flex: 1;">
+              <div style="font-family: var(--font-h); font-weight: 800; font-size: 1.3rem;">92%</div>
+              <div style="font-size: .72rem; color: var(--text-3);">plan adherence</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <!-- ═══════════════════════════════
+       BOTTOM NAVIGATION
+       ═══════════════════════════════ -->
+  <nav class="bottom-nav">
+    <button class="nav-tab active">
+      <span class="nav-tab-icon">🏠</span>
+      <span class="nav-tab-label">Home</span>
+    </button>
+    <button class="nav-tab">
+      <span class="nav-tab-icon">📋</span>
+      <span class="nav-tab-label">Plan</span>
+    </button>
+    <button class="nav-tab">
+      <span class="nav-tab-icon">📅</span>
+      <span class="nav-tab-label">Calendar</span>
+    </button>
+    <button class="nav-tab">
+      <span class="nav-tab-icon">🔥</span>
+      <span class="nav-tab-label">Nutrition</span>
+    </button>
+    <button class="nav-tab" onclick="window.location.href='landing.html'">
+      <span class="nav-tab-icon">👤</span>
+      <span class="nav-tab-label">Profile</span>
+    </button>
+  </nav>
+
+  <script>
+    const TOTAL_EXERCISES = 5;
+    let completed = new Set();
+
+    function updateProgress() {
+      const count = completed.size;
+      document.getElementById('progressLabel').textContent = count + ' / ' + TOTAL_EXERCISES + ' done';
+      document.getElementById('progressBar').style.width = (count / TOTAL_EXERCISES * 100) + '%';
+
+      const cta = document.querySelector('.hero-cta');
+      if (count > 0 && count < TOTAL_EXERCISES) {
+        cta.innerHTML = '<span class="play-icon">▶</span> Continue Workout';
+      } else if (count === TOTAL_EXERCISES) {
+        cta.innerHTML = '🎉 Workout Complete!';
+        cta.style.background = '#10b981';
+        cta.style.color = '#fff';
+      }
+    }
+
+    function toggleExercise(idx) {
+      const item = document.querySelector('[data-exercise="' + idx + '"]');
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.exercise-item').forEach(el => el.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    }
+
+    function completeExercise(idx) {
+      const check = document.getElementById('check-' + idx);
+      const name = document.getElementById('name-' + idx);
+      if (completed.has(idx)) {
+        completed.delete(idx);
+        check.classList.remove('done');
+        name.classList.remove('completed');
+      } else {
+        completed.add(idx);
+        check.classList.add('done');
+        name.classList.add('completed');
+      }
+      updateProgress();
+    }
+
+    function toggleSet(btn) {
+      btn.classList.toggle('checked');
+    }
+
+    function toggleSecondary(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    function scrollToWorkout() {
+      document.getElementById('workoutSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const firstUndone = [...Array(TOTAL_EXERCISES).keys()].find(i => !completed.has(i));
+      if (firstUndone !== undefined) {
+        setTimeout(() => toggleExercise(firstUndone), 400);
+      }
+    }
+  </script>
+
+</body>
+</html>

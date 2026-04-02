@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitFlow — Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── TOKENS ── */
+    :root {
+      --bg: #fafaf9;
+      --surface: #ffffff;
+      --text: #1a1a1a;
+      --text-2: #6b7280;
+      --text-3: #9ca3af;
+      --primary: #4f46e5;
+      --primary-light: #eef2ff;
+      --primary-dark: #4338ca;
+      --accent: #10b981;
+      --border: #e5e7eb;
+      --border-light: #f3f4f6;
+      --danger: #ef4444;
+      --font-h: 'Plus Jakarta Sans', sans-serif;
+      --font-b: 'DM Sans', sans-serif;
+      --r-sm: 8px; --r-md: 12px; --r-lg: 20px; --r-xl: 28px; --r-full: 9999px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+      --shadow-md: 0 4px 16px rgba(0,0,0,.07);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,.10);
+      --shadow-xl: 0 24px 64px rgba(0,0,0,.14);
+    }
+
+    /* ── RESET ── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font-b); color: var(--text); background: var(--bg); line-height: 1.6; min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+    button { font-family: var(--font-b); cursor: pointer; border: none; }
+    input { font-family: var(--font-b); }
+
+    /* ── LAYOUT ── */
+    .landing {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+
+    /* ── LEFT: WELCOME + FEATURES ── */
+    .landing-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 56px;
+      background: linear-gradient(160deg, var(--primary-light) 0%, var(--bg) 50%);
+    }
+
+    .brand {
+      font-family: var(--font-h);
+      font-weight: 800;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 48px;
+    }
+
+    .brand-icon { color: var(--primary); font-size: 1.5rem; }
+
+    .welcome-heading {
+      font-family: var(--font-h);
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .welcome-heading span { color: var(--primary); }
+
+    .welcome-sub {
+      font-size: 1.02rem;
+      color: var(--text-2);
+      max-width: 420px;
+      margin-bottom: 40px;
+    }
+
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 400px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--r-md);
+      transition: all .2s ease;
+    }
+
+    .feature-item:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-sm);
+      transform: translateX(4px);
+    }
+
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      background: var(--primary-light);
+      border-radius: var(--r-sm);
+      flex-shrink: 0;
+    }
+
+    .feature-name {
+      font-family: var(--font-h);
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    .feature-desc {
+      font-size: 0.78rem;
+      color: var(--text-2);
+      margin-top: 1px;
+    }
+
+    /* ── RIGHT: LOGIN PANEL ── */
+    .landing-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 48px;
+      background: var(--surface);
+      border-left: 1px solid var(--border-light);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .login-card h2 {
+      font-family: var(--font-h);
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .login-card .sub {
+      font-size: 0.9rem;
+      color: var(--text-2);
+      margin-bottom: 32px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-family: var(--font-h);
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      font-size: 0.92rem;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .form-group input::placeholder { color: var(--text-3); }
+
+    .form-group input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      font-size: 0.82rem;
+    }
+
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-2);
+    }
+
+    .remember input[type="checkbox"] {
+      accent-color: var(--primary);
+      width: 15px;
+      height: 15px;
+    }
+
+    .forgot-link {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .forgot-link:hover { text-decoration: underline; }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 13px 24px;
+      font-family: var(--font-h);
+      font-weight: 700;
+      font-size: 0.92rem;
+      border-radius: var(--r-sm);
+      transition: all .2s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      box-shadow: var(--shadow-md);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 22px 0;
+      font-size: 0.78rem;
+      color: var(--text-3);
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .toggle-text {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.85rem;
+      color: var(--text-2);
+    }
+
+    .toggle-text a {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .toggle-text a:hover { text-decoration: underline; }
+
+    /* ── SIGN-UP MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all .25s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: var(--surface);
+      border-radius: var(--r-xl);
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: var(--shadow-xl);
+      transform: translateY(20px) scale(0.97);
+      transition: transform .25s ease;
+      position: relative;
+    }
+
+    .modal-overlay.active .modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 18px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: var(--text-3);
+      background: var(--border-light);
+      border-radius: var(--r-full);
+      cursor: pointer;
+      border: none;
+      transition: all .15s;
+    }
+
+    .modal-close:hover {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    .modal h2 {
+      font-family: var(--font-h);
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .modal .sub {
+      font-size: 0.88rem;
+      color: var(--text-2);
+      margin-bottom: 28px;
+    }
+
+    .modal .form-group { margin-bottom: 16px; }
+
+    .name-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .modal .btn { margin-top: 6px; }
+
+    .modal .toggle-text { margin-top: 20px; }
+
+    /* ── AVATAR SELECT (SIGN UP) ── */
+    .avatar-select {
+      margin-bottom: 20px;
+    }
+
+    .avatar-select label {
+      display: block;
+      font-family: var(--font-h);
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .avatar-options {
+      display: flex;
+      gap: 10px;
+    }
+
+    .avatar-option {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      background: var(--border-light);
+      border: 2px solid transparent;
+      border-radius: var(--r-full);
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .avatar-option:hover {
+      border-color: var(--border);
+      transform: scale(1.08);
+    }
+
+    .avatar-option.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      .landing {
+        grid-template-columns: 1fr;
+      }
+
+      .landing-left {
+        padding: 40px 28px 32px;
+      }
+
+      .landing-right {
+        border-left: none;
+        border-top: 1px solid var(--border-light);
+        padding: 40px 28px;
+      }
+
+      .feature-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        max-width: 100%;
+      }
+
+      .feature-item {
+        flex: 1 1 170px;
+      }
+
+      .feature-desc { display: none; }
+    }
+
+    @media (max-width: 500px) {
+      .landing-left { padding: 32px 20px 24px; }
+      .landing-right { padding: 32px 20px; }
+      .welcome-heading { font-size: 1.6rem; }
+      .name-row { grid-template-columns: 1fr; }
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .landing-left { animation: fadeInUp .5s ease-out; }
+    .login-card { animation: fadeInUp .5s ease-out .1s both; }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════════════════════
+       LANDING: SPLIT LAYOUT
+       ════════════════════════════════════ -->
+  <div class="landing">
+
+    <!-- LEFT — BRAND + FEATURE PREVIEW -->
+    <div class="landing-left">
+      <div class="brand">
+        <span class="brand-icon">◉</span> FitFlow
+      </div>
+
+      <h1 class="welcome-heading">
+        Your fitness,<br/><span>together.</span>
+      </h1>
+      <p class="welcome-sub">
+        Plan workouts, track calories, and crush goals — built for just the two of you.
+      </p>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-icon">📋</div>
+          <div>
+            <div class="feature-name">Workout Planner</div>
+            <div class="feature-desc">Custom routines & expert plans</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">📅</div>
+          <div>
+            <div class="feature-name">Calendar</div>
+            <div class="feature-desc">Schedule & visualize your week</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🔥</div>
+          <div>
+            <div class="feature-name">Calorie Tracker</div>
+            <div class="feature-desc">Log meals & hit your macros</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🧮</div>
+          <div>
+            <div class="feature-name">TDEE Calculator</div>
+            <div class="feature-desc">Personalized nutrition targets</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🤖</div>
+          <div>
+            <div class="feature-name">AI Coach</div>
+            <div class="feature-desc">Smart feedback & recommendations</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">📊</div>
+          <div>
+            <div class="feature-name">Progress Tracker</div>
+            <div class="feature-desc">Body metrics, PRs & streaks</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT — LOGIN FORM -->
+    <div class="landing-right">
+      <div class="login-card">
+        <h2>Welcome back</h2>
+        <p class="sub">Sign in to your profile</p>
+
+        <form onsubmit="event.preventDefault(); window.location.href='main-menu.html';">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="you@example.com" required />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password" required />
+          </div>
+
+          <div class="form-options">
+            <label class="remember">
+              <input type="checkbox" checked /> Remember me
+            </label>
+            <a href="#" class="forgot-link">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Sign In</button>
+        </form>
+
+        <div class="divider">or</div>
+
+        <button class="btn btn-outline" onclick="openModal()">Create an Account</button>
+
+        <p class="toggle-text">
+          New here? <a href="#" onclick="openModal(); return false;">Sign up now</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       SIGN-UP MODAL
+       ════════════════════════════════════ -->
+  <div class="modal-overlay" id="signupModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+
+      <h2>Create your profile</h2>
+      <p class="sub">Set up your account to get started</p>
+
+      <form onsubmit="event.preventDefault(); closeModal();">
+        <div class="name-row">
+          <div class="form-group">
+            <label for="firstName">First name</label>
+            <input type="text" id="firstName" placeholder="Nicholas" required />
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last name</label>
+            <input type="text" id="lastName" placeholder="Chan" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="signupEmail">Email</label>
+          <input type="email" id="signupEmail" placeholder="you@example.com" required />
+        </div>
+
+        <div class="form-group">
+          <label for="signupPassword">Password</label>
+          <input type="password" id="signupPassword" placeholder="Min. 8 characters" required />
+        </div>
+
+        <div class="avatar-select">
+          <label>Choose your avatar</label>
+          <div class="avatar-options">
+            <div class="avatar-option selected" onclick="selectAvatar(this)">🏋️</div>
+            <div class="avatar-option" onclick="selectAvatar(this)">🧘</div>
+            <div class="avatar-option" onclick="selectAvatar(this)">🏃</div>
+            <div class="avatar-option" onclick="selectAvatar(this)">💪</div>
+            <div class="avatar-option" onclick="selectAvatar(this)">🚴</div>
+            <div class="avatar-option" onclick="selectAvatar(this)">⭐</div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create Account</button>
+      </form>
+
+      <p class="toggle-text">
+        Already have an account? <a href="#" onclick="closeModal(); return false;">Sign in</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      document.getElementById('signupModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('signupModal').classList.remove('active');
+    }
+
+    document.getElementById('signupModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    function selectAvatar(el) {
+      document.querySelectorAll('.avatar-option').forEach(a => a.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+  </script>
+
+</body>
+</html>
