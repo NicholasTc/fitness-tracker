@@ -32,6 +32,12 @@ const userSchema = new mongoose.Schema(
       required: true,
       select: false,
     },
+    /** UI color theme; persisted for cross-device sync. */
+    theme: {
+      type: String,
+      enum: ["default", "roseLight"],
+      default: "default",
+    },
     profile: { type: profileSchema, default: () => ({}) },
   },
   { timestamps: true },

@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { AuthContext } from "./auth-context.js";
 import { API_BASE, parseJsonSafe } from "../lib/api.js";
+import { normalizeTheme, persistThemeMirror } from "../lib/theme.js";
 
 const STORAGE_TOKEN = "fitflow_token";
 const STORAGE_USER = "fitflow_user";
@@ -32,9 +33,13 @@ export function AuthProvider({ children }) {
     if (!res.ok) {
       throw new Error(data?.error || res.statusText || `HTTP ${res.status}`);
     }
+    const u = {
+      ...data.user,
+      theme: normalizeTheme(data.user?.theme),
+    };
     sessionStorage.setItem(STORAGE_TOKEN, data.token);
-    sessionStorage.setItem(STORAGE_USER, JSON.stringify(data.user));
-    setAuth({ token: data.token, user: data.user });
+    sessionStorage.setItem(STORAGE_USER, JSON.stringify(u));
+    setAuth({ token: data.token, user: u });
   }, []);
 
   const register = useCallback(async (email, password) => {
@@ -47,12 +52,38 @@ export function AuthProvider({ children }) {
     if (!res.ok) {
       throw new Error(data?.error || res.statusText || `HTTP ${res.status}`);
     }
+    const u = {
+      ...data.user,
+      theme: normalizeTheme(data.user?.theme),
+    };
     sessionStorage.setItem(STORAGE_TOKEN, data.token);
-    sessionStorage.setItem(STORAGE_USER, JSON.stringify(data.user));
-    setAuth({ token: data.token, user: data.user });
+    sessionStorage.setItem(STORAGE_USER, JSON.stringify(u));
+    setAuth({ token: data.token, user: u });
+  }, []);
+
+  const patchUser = useCallback((patch) => {
+    setAuth((prev) => {
+      if (!prev.user) return prev;
+      const user = { ...prev.user, ...patch };
+      try {
+        sessionStorage.setItem(STORAGE_USER, JSON.stringify(user));
+      } catch {
+        /* ignore */
+      }
+      return { ...prev, user };
+    });
   }, []);
 
   const logout = useCallback(() => {
+    try {
+      const raw = sessionStorage.getItem(STORAGE_USER);
+      if (raw) {
+        const u = JSON.parse(raw);
+        if (u?.theme) persistThemeMirror(normalizeTheme(u.theme));
+      }
+    } catch {
+      /* ignore */
+    }
     sessionStorage.removeItem(STORAGE_TOKEN);
     sessionStorage.removeItem(STORAGE_USER);
     setAuth({ token: null, user: null });
@@ -65,8 +96,9 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
+      patchUser,
     }),
-    [auth.token, auth.user, login, register, logout],
+    [auth.token, auth.user, login, register, logout, patchUser],
   );
 
   return (

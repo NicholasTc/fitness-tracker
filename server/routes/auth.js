@@ -50,7 +50,11 @@ router.post("/register", async (req, res, next) => {
     const token = signToken(user);
     res.status(201).json({
       token,
-      user: { id: user._id.toString(), email: user.email },
+      user: {
+        id: user._id.toString(),
+        email: user.email,
+        theme: user.theme ?? "default",
+      },
     });
   } catch (err) {
     if (err.code === 11000) {
@@ -90,7 +94,11 @@ router.post("/login", async (req, res, next) => {
     const token = signToken(user);
     res.json({
       token,
-      user: { id: user._id.toString(), email: user.email },
+      user: {
+        id: user._id.toString(),
+        email: user.email,
+        theme: user.theme ?? "default",
+      },
     });
   } catch (err) {
     next(err);

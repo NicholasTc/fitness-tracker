@@ -2,6 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { API_BASE, bearerAuth, jsonAuthHeaders, parseJsonSafe } from "../lib/api.js";
+import {
+  applyTheme,
+  normalizeTheme,
+  persistThemeMirror,
+} from "../lib/theme.js";
 
 const SEX = [
   { value: "", label: "—" },
@@ -27,7 +32,7 @@ const GOAL = [
 ];
 
 export default function Profile() {
-  const { token, logout } = useAuth();
+  const { token, logout, patchUser } = useAuth();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
@@ -44,6 +49,8 @@ export default function Profile() {
 
   const [computed, setComputed] = useState(null);
   const [effectiveTargetCalories, setEffectiveTargetCalories] = useState(null);
+
+  const [theme, setTheme] = useState("default");
 
   const load = useCallback(async () => {
     if (!token) return;
@@ -74,12 +81,15 @@ export default function Profile() {
       );
       setComputed(data.computed ?? null);
       setEffectiveTargetCalories(data.effectiveTargetCalories ?? null);
+      const th = normalizeTheme(data.theme);
+      setTheme(th);
+      patchUser({ theme: th });
     } catch (e) {
       setError(e.message || String(e));
     } finally {
       setLoading(false);
     }
-  }, [token, logout, navigate]);
+  }, [token, logout, navigate, patchUser]);
 
   useEffect(() => {
     load();
@@ -100,6 +110,7 @@ export default function Profile() {
         goal: goal || null,
         targetCalories:
           targetCalories.trim() === "" ? null : Number(targetCalories),
+        theme: normalizeTheme(theme),
       };
       const res = await fetch(`${API_BASE}/api/profile`, {
         method: "PUT",
@@ -117,6 +128,11 @@ export default function Profile() {
       }
       setComputed(data.computed ?? null);
       setEffectiveTargetCalories(data.effectiveTargetCalories ?? null);
+      const nextTheme = normalizeTheme(data.theme);
+      setTheme(nextTheme);
+      patchUser({ theme: nextTheme });
+      applyTheme(nextTheme);
+      persistThemeMirror(nextTheme);
     } catch (e) {
       setError(e.message || String(e));
     } finally {
@@ -137,6 +153,24 @@ export default function Profile() {
 
       {!loading && (
         <form className="ff-card" onSubmit={handleSubmit}>
+          <h2 className="ff-section-title">Appearance</h2>
+          <p className="ff-meta ff-muted">
+            Applies across the app and the sign-in page after you log out on this
+            device.
+          </p>
+          <div className="ff-form-grid">
+            <label htmlFor="theme">Color theme</label>
+            <select
+              id="theme"
+              value={theme}
+              onChange={(e) => setTheme(e.target.value)}
+            >
+              <option value="default">Default (indigo)</option>
+              <option value="roseLight">Soft pink</option>
+            </select>
+          </div>
+
+          <h2 className="ff-section-title">Body &amp; goals</h2>
           <p className="ff-meta">
             Values feed the Mifflin–St Jeor estimate. Leave fields empty if
             unknown.

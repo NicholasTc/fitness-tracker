@@ -30,6 +30,7 @@ function buildProfileResponse(userDoc) {
     profile,
     computed,
     effectiveTargetCalories: effectiveDailyCalories(profile),
+    theme: userDoc.theme ?? "default",
   };
 }
 
@@ -71,6 +72,15 @@ router.put("/", requireAuth, async (req, res, next) => {
     if (!user) {
       res.status(404).json({ error: "User not found" });
       return;
+    }
+
+    if ("theme" in body) {
+      const t = body.theme;
+      if (t !== "default" && t !== "roseLight") {
+        res.status(400).json({ error: "theme must be default or roseLight" });
+        return;
+      }
+      user.theme = t;
     }
 
     const nextProfile = { ...getPlainProfile(user) };
