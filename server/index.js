@@ -4,6 +4,12 @@ import cors from "cors";
 import mongoose from "mongoose";
 import authRouter from "./routes/auth.js";
 import profileRouter from "./routes/profile.js";
+import calendarRouter from "./routes/calendar.js";
+import foodLogsRouter from "./routes/foodLogs.js";
+import workoutTemplatesRouter from "./routes/workoutTemplates.js";
+import measurementsRouter from "./routes/measurements.js";
+import personalRecordsRouter from "./routes/personalRecords.js";
+import progressPhotosRouter from "./routes/progressPhotos.js";
 import workoutsRouter from "./routes/workouts.js";
 
 const PORT = process.env.PORT || 5050;
@@ -27,10 +33,31 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/profile", profileRouter);
+app.use("/api/food-logs", foodLogsRouter);
+app.use("/api/calendar", calendarRouter);
+app.use("/api/measurements", measurementsRouter);
+app.use("/api/personal-records", personalRecordsRouter);
+app.use("/api/progress-photos", progressPhotosRouter);
+app.use("/api/workout-templates", workoutTemplatesRouter);
 app.use("/api/workouts", workoutsRouter);
 
 app.use((err, req, res, next) => {
   if (err.name === "ValidationError") {
+    res.status(400).json({ error: err.message });
+    return;
+  }
+  if (err.name === "MulterError") {
+    const msg =
+      err.code === "LIMIT_FILE_SIZE"
+        ? "Image too large (max 5MB)"
+        : err.message;
+    res.status(400).json({ error: msg });
+    return;
+  }
+  if (
+    typeof err.message === "string" &&
+    err.message.includes("Only JPEG, PNG, WebP, or GIF")
+  ) {
     res.status(400).json({ error: err.message });
     return;
   }

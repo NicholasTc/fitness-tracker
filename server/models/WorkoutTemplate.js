@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { exerciseSchema } from "./exerciseSchema.js";
 
-const workoutSchema = new mongoose.Schema(
+const workoutTemplateSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -15,11 +15,9 @@ const workoutSchema = new mongoose.Schema(
       trim: true,
       maxlength: 200,
     },
-    /** Calendar day for this session (legacy docs may rely on createdAt). */
-    date: { type: Date },
     exercises: { type: [exerciseSchema], default: [] },
   },
   { timestamps: true },
 );
 
-export default mongoose.model("Workout", workoutSchema);
+export default mongoose.model("WorkoutTemplate", workoutTemplateSchema);

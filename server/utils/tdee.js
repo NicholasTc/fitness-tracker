@@ -54,3 +54,12 @@ export function computeNutritionTargets(profile) {
     recommendedCalories: Math.round(recommended),
   };
 }
+
+/**
+ * Daily calorie target: manual override from profile, else formula from computeNutritionTargets.
+ */
+export function effectiveDailyCalories(profile) {
+  if (!profile || typeof profile !== "object") return null;
+  if (profile.targetCalories != null) return profile.targetCalories;
+  return computeNutritionTargets(profile)?.recommendedCalories ?? null;
+}

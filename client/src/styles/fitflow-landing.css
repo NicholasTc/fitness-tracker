@@ -1,0 +1,521 @@
+/* Landing — from design-proposal/landing.html (scoped) */
+.ff-landing-root {
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --text: #1a1a1a;
+  --text-2: #6b7280;
+  --text-3: #9ca3af;
+  --primary: #4f46e5;
+  --primary-light: #eef2ff;
+  --primary-dark: #4338ca;
+  --accent: #10b981;
+  --border: #e5e7eb;
+  --border-light: #f3f4f6;
+  --danger: #ef4444;
+  --font-h: "Plus Jakarta Sans", sans-serif;
+  --font-b: "DM Sans", sans-serif;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --r-full: 9999px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.14);
+
+  font-family: var(--font-b);
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.ff-landing-root *,
+.ff-landing-root *::before,
+.ff-landing-root *::after {
+  box-sizing: border-box;
+}
+
+.ff-landing-root a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.ff-landing-root ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ff-landing-root button {
+  font-family: var(--font-b);
+  cursor: pointer;
+  border: none;
+}
+
+.ff-landing-root input {
+  font-family: var(--font-b);
+}
+
+.ff-landing-root .landing {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+.ff-landing-root .landing-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 56px;
+  background: linear-gradient(160deg, var(--primary-light) 0%, var(--bg) 50%);
+}
+
+.ff-landing-root .brand {
+  font-family: var(--font-h);
+  font-weight: 800;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 48px;
+}
+
+.ff-landing-root .brand-icon {
+  color: var(--primary);
+  font-size: 1.5rem;
+}
+
+.ff-landing-root .welcome-heading {
+  font-family: var(--font-h);
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 0 12px;
+}
+
+.ff-landing-root .welcome-heading span {
+  color: var(--primary);
+}
+
+.ff-landing-root .welcome-sub {
+  font-size: 1.02rem;
+  color: var(--text-2);
+  max-width: 420px;
+  margin: 0 0 40px;
+}
+
+.ff-landing-root .feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 400px;
+}
+
+.ff-landing-root .feature-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-md);
+  transition: all 0.2s ease;
+}
+
+.ff-landing-root .feature-item:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-sm);
+  transform: translateX(4px);
+}
+
+.ff-landing-root .feature-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  background: var(--primary-light);
+  border-radius: var(--r-sm);
+  flex-shrink: 0;
+}
+
+.ff-landing-root .feature-name {
+  font-family: var(--font-h);
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.ff-landing-root .feature-desc {
+  font-size: 0.78rem;
+  color: var(--text-2);
+  margin-top: 1px;
+}
+
+.ff-landing-root .landing-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 48px;
+  background: var(--surface);
+  border-left: 1px solid var(--border-light);
+}
+
+.ff-landing-root .login-card {
+  width: 100%;
+  max-width: 380px;
+}
+
+.ff-landing-root .login-card h2 {
+  font-family: var(--font-h);
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0 0 6px;
+}
+
+.ff-landing-root .login-card .sub {
+  font-size: 0.9rem;
+  color: var(--text-2);
+  margin-bottom: 32px;
+}
+
+.ff-landing-root .form-group {
+  margin-bottom: 18px;
+}
+
+.ff-landing-root .form-group label {
+  display: block;
+  font-family: var(--font-h);
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.ff-landing-root .form-group input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 0.92rem;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ff-landing-root .form-group input::placeholder {
+  color: var(--text-3);
+}
+
+.ff-landing-root .form-group input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.ff-landing-root .form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  font-size: 0.82rem;
+}
+
+.ff-landing-root .remember {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-2);
+}
+
+.ff-landing-root .remember input[type="checkbox"] {
+  accent-color: var(--primary);
+  width: 15px;
+  height: 15px;
+}
+
+.ff-landing-root .forgot-link {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.ff-landing-root .forgot-link:hover {
+  text-decoration: underline;
+}
+
+.ff-landing-root .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 13px 24px;
+  font-family: var(--font-h);
+  font-weight: 700;
+  font-size: 0.92rem;
+  border-radius: var(--r-sm);
+  transition: all 0.2s ease;
+}
+
+.ff-landing-root .btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.ff-landing-root .btn-primary:hover:not(:disabled) {
+  background: var(--primary-dark);
+  box-shadow: var(--shadow-md);
+}
+
+.ff-landing-root .btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.ff-landing-root .divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0;
+  font-size: 0.78rem;
+  color: var(--text-3);
+}
+
+.ff-landing-root .divider::before,
+.ff-landing-root .divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.ff-landing-root .btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid var(--border);
+}
+
+.ff-landing-root .btn-outline:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.ff-landing-root .toggle-text {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 0.85rem;
+  color: var(--text-2);
+}
+
+.ff-landing-root .toggle-text button.link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--primary);
+  font-weight: 600;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.ff-landing-root .toggle-text button.link:hover {
+  text-decoration: underline;
+}
+
+.ff-landing-root .err {
+  color: var(--danger);
+  font-size: 0.88rem;
+  margin: 0 0 12px;
+}
+
+/* Modal */
+.ff-landing-root .modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s ease;
+}
+
+.ff-landing-root .modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.ff-landing-root .modal {
+  background: var(--surface);
+  border-radius: var(--r-xl);
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow-xl);
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.25s ease;
+  position: relative;
+}
+
+.ff-landing-root .modal-overlay.active .modal {
+  transform: translateY(0) scale(1);
+}
+
+.ff-landing-root .modal-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: var(--text-3);
+  background: var(--border-light);
+  border-radius: var(--r-full);
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+
+.ff-landing-root .modal-close:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
+.ff-landing-root .modal h2 {
+  font-family: var(--font-h);
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin: 0 0 4px;
+}
+
+.ff-landing-root .modal .sub {
+  font-size: 0.88rem;
+  color: var(--text-2);
+  margin-bottom: 28px;
+}
+
+.ff-landing-root .name-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ff-landing-root .avatar-select {
+  margin-bottom: 20px;
+}
+
+.ff-landing-root .avatar-select > label {
+  display: block;
+  font-family: var(--font-h);
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.ff-landing-root .avatar-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ff-landing-root .avatar-option {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  background: var(--border-light);
+  border: 2px solid transparent;
+  border-radius: var(--r-full);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.ff-landing-root .avatar-option:hover {
+  border-color: var(--border);
+  transform: scale(1.08);
+}
+
+.ff-landing-root .avatar-option.selected {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+@keyframes ff-fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ff-landing-root .landing-left {
+  animation: ff-fadeInUp 0.5s ease-out;
+}
+
+.ff-landing-root .login-card {
+  animation: ff-fadeInUp 0.5s ease-out 0.1s both;
+}
+
+@media (max-width: 860px) {
+  .ff-landing-root .landing {
+    grid-template-columns: 1fr;
+  }
+
+  .ff-landing-root .landing-left {
+    padding: 40px 28px 32px;
+  }
+
+  .ff-landing-root .landing-right {
+    border-left: none;
+    border-top: 1px solid var(--border-light);
+    padding: 40px 28px;
+  }
+
+  .ff-landing-root .feature-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+
+  .ff-landing-root .feature-item {
+    flex: 1 1 170px;
+  }
+
+  .ff-landing-root .feature-desc {
+    display: none;
+  }
+}
+
+@media (max-width: 500px) {
+  .ff-landing-root .landing-left {
+    padding: 32px 20px 24px;
+  }
+
+  .ff-landing-root .landing-right {
+    padding: 32px 20px;
+  }
+
+  .ff-landing-root .welcome-heading {
+    font-size: 1.6rem;
+  }
+
+  .ff-landing-root .name-row {
+    grid-template-columns: 1fr;
+  }
+}

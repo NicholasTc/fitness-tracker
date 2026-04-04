@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { API_BASE, bearerAuth, jsonAuthHeaders, parseJsonSafe } from "../lib/api.js";
-import "../App.css";
 
 const SEX = [
   { value: "", label: "—" },
@@ -28,7 +27,7 @@ const GOAL = [
 ];
 
 export default function Profile() {
-  const { token, user, logout } = useAuth();
+  const { token, logout } = useAuth();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
@@ -125,41 +124,25 @@ export default function Profile() {
     }
   }
 
-  function handleLogout() {
-    logout();
-    navigate("/login", { replace: true });
-  }
-
   return (
-    <main className="shell">
-      <header className="dash-header">
-        <div>
-          <h1>Profile</h1>
-          <p className="meta">
-            Signed in as <strong>{user?.email}</strong> ·{" "}
-            <Link to="/">Dashboard</Link>
-          </p>
-        </div>
-        <button type="button" className="logout-btn" onClick={handleLogout}>
-          Log out
-        </button>
-      </header>
+    <div className="ff-page">
+      <h1 className="ff-page-title">TDEE &amp; profile</h1>
 
-      {loading && <p className="meta">Loading…</p>}
+      {loading && <p className="ff-meta">Loading…</p>}
       {error && (
-        <p className="err" role="alert">
+        <p className="ff-err" role="alert">
           {error}
         </p>
       )}
 
       {!loading && (
-        <form className="panel profile-form" onSubmit={handleSubmit}>
-          <p className="meta">
-            Values feed the Mifflin–St Jeor estimate (Stage 3). Leave fields
-            empty if unknown.
+        <form className="ff-card" onSubmit={handleSubmit}>
+          <p className="ff-meta">
+            Values feed the Mifflin–St Jeor estimate. Leave fields empty if
+            unknown.
           </p>
 
-          <div className="profile-grid">
+          <div className="ff-form-grid">
             <label htmlFor="heightCm">Height (cm)</label>
             <input
               id="heightCm"
@@ -241,20 +224,20 @@ export default function Profile() {
             />
           </div>
 
-          <button type="submit" disabled={saving}>
+          <button type="submit" className="ff-btn-primary" disabled={saving}>
             {saving ? "Saving…" : "Save profile"}
           </button>
 
-          <section className="profile-summary" aria-live="polite">
-            <h2 className="panel-title">Estimates</h2>
+          <section aria-live="polite">
+            <h2 className="ff-section-title">Estimates</h2>
             {!computed && (
-              <p className="muted">
+              <p className="ff-muted">
                 Fill height, weight, age, sex, activity, and goal for BMR / TDEE /
                 recommended calories.
               </p>
             )}
             {computed && (
-              <ul className="estimate-list">
+              <ul className="ff-estimate-list">
                 <li>
                   BMR: <strong>{computed.bmr}</strong> kcal/day
                 </li>
@@ -269,7 +252,7 @@ export default function Profile() {
                   Effective daily target:{" "}
                   <strong>{effectiveTargetCalories ?? "—"}</strong> kcal/day
                   {targetCalories.trim() !== "" && (
-                    <span className="muted"> (manual override)</span>
+                    <span className="ff-muted"> (manual override)</span>
                   )}
                 </li>
               </ul>
@@ -277,6 +260,6 @@ export default function Profile() {
           </section>
         </form>
       )}
-    </main>
+    </div>
   );
 }

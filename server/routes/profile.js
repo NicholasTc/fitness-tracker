@@ -1,7 +1,7 @@
 import { Router } from "express";
 import User from "../models/User.js";
 import { requireAuth } from "../middleware/auth.js";
-import { computeNutritionTargets } from "../utils/tdee.js";
+import { computeNutritionTargets, effectiveDailyCalories } from "../utils/tdee.js";
 
 const router = Router();
 
@@ -25,14 +25,11 @@ function getPlainProfile(userDoc) {
 function buildProfileResponse(userDoc) {
   const profile = getPlainProfile(userDoc);
   const computed = computeNutritionTargets(profile);
-  const override = profile.targetCalories;
-  const effectiveTargetCalories =
-    override != null ? override : computed?.recommendedCalories ?? null;
 
   return {
     profile,
     computed,
-    effectiveTargetCalories,
+    effectiveTargetCalories: effectiveDailyCalories(profile),
   };
 }
 
