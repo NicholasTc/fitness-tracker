@@ -1,16 +1,22 @@
+import { useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
+import { AvatarIcon } from "../icons/AvatarIcon.jsx";
+import {
+  IoLogOutOutline,
+  IoNotificationsOutline,
+  IoPersonOutline,
+  IoPulseOutline,
+  IoSettingsOutline,
+  NAV_ICON,
+  readAvatarIconIndex,
+} from "../icons/fitflowIonIcons.js";
 import "../styles/fitflow-app.css";
-
-const AVATAR_KEY = "fitflow_avatar_emoji";
 
 export default function AppShell() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const avatar =
-    typeof window !== "undefined"
-      ? localStorage.getItem(AVATAR_KEY) || "🏋️"
-      : "🏋️";
+  const [avatarIdx] = useState(() => readAvatarIconIndex());
 
   const email = user?.email ?? "";
   const displayName = email.includes("@")
@@ -28,12 +34,25 @@ export default function AppShell() {
     day: "numeric",
   });
 
+  const {
+    dashboard: IconDashboard,
+    workouts: IconWorkouts,
+    calendar: IconCalendar,
+    nutrition: IconNutrition,
+    tdee: IconTdee,
+    aiCoach: IconAiCoach,
+    progress: IconProgress,
+  } = NAV_ICON;
+
   return (
     <div className="ff-app-root">
       <div className="ff-app">
         <aside className="ff-sidebar" aria-label="Main navigation">
           <div className="ff-sidebar-brand">
-            <span>◉</span> FitFlow
+            <span className="ff-brand-ico" aria-hidden>
+              <IoPulseOutline size={18} />
+            </span>{" "}
+            FitFlow
           </div>
 
           <nav className="ff-sidebar-nav">
@@ -44,7 +63,10 @@ export default function AppShell() {
               }
               to="/"
             >
-              <span className="ff-icon">🏠</span> Dashboard
+              <span className="ff-icon" aria-hidden>
+                <IconDashboard />
+              </span>{" "}
+              Dashboard
             </NavLink>
 
             <div className="ff-nav-section-label">Training</div>
@@ -54,7 +76,10 @@ export default function AppShell() {
               }
               to="/workouts"
             >
-              <span className="ff-icon">📋</span> Workout Planner
+              <span className="ff-icon" aria-hidden>
+                <IconWorkouts />
+              </span>{" "}
+              Workout Planner
             </NavLink>
             <NavLink
               className={({ isActive }) =>
@@ -62,7 +87,10 @@ export default function AppShell() {
               }
               to="/calendar"
             >
-              <span className="ff-icon">📅</span> Calendar
+              <span className="ff-icon" aria-hidden>
+                <IconCalendar />
+              </span>{" "}
+              Calendar
             </NavLink>
 
             <div className="ff-nav-section-label">Nutrition</div>
@@ -72,7 +100,10 @@ export default function AppShell() {
               }
               to="/nutrition"
             >
-              <span className="ff-icon">🔥</span> Calorie Tracker
+              <span className="ff-icon" aria-hidden>
+                <IconNutrition />
+              </span>{" "}
+              Calorie Tracker
             </NavLink>
             <NavLink
               className={({ isActive }) =>
@@ -80,7 +111,10 @@ export default function AppShell() {
               }
               to="/profile"
             >
-              <span className="ff-icon">🧮</span> TDEE Calculator
+              <span className="ff-icon" aria-hidden>
+                <IconTdee />
+              </span>{" "}
+              TDEE Calculator
             </NavLink>
 
             <div className="ff-nav-section-label">Insights</div>
@@ -90,7 +124,10 @@ export default function AppShell() {
               title="AI Coach is planned after MVP"
               disabled
             >
-              <span className="ff-icon">🤖</span> AI Coach
+              <span className="ff-icon" aria-hidden>
+                <IconAiCoach />
+              </span>{" "}
+              AI Coach
             </button>
             <NavLink
               className={({ isActive }) =>
@@ -98,14 +135,17 @@ export default function AppShell() {
               }
               to="/progress"
             >
-              <span className="ff-icon">📊</span> Progress
+              <span className="ff-icon" aria-hidden>
+                <IconProgress />
+              </span>{" "}
+              Progress
             </NavLink>
           </nav>
 
           <div className="ff-sidebar-footer">
             <Link className="ff-user-pill" to="/profile">
               <div className="ff-user-avatar" aria-hidden>
-                {avatar}
+                <AvatarIcon index={avatarIdx} size={17} />
               </div>
               <div>
                 <div className="ff-user-name">{displayName}</div>
@@ -113,7 +153,10 @@ export default function AppShell() {
               </div>
             </Link>
             <button type="button" className="ff-logout-btn" onClick={handleLogout}>
-              <span>←</span> Sign Out
+              <span className="ff-icon" aria-hidden>
+                <IoLogOutOutline size={16} />
+              </span>
+              Sign Out
             </button>
           </div>
         </aside>
@@ -122,7 +165,7 @@ export default function AppShell() {
           <header className="ff-mobile-topbar">
             <div className="ff-mobile-topbar-left">
               <div className="ff-mobile-avatar" aria-hidden>
-                {avatar}
+                <AvatarIcon index={avatarIdx} size={18} />
               </div>
               <div>
                 <div className="ff-mobile-greeting">Hey, {displayName}</div>
@@ -130,11 +173,16 @@ export default function AppShell() {
               </div>
             </div>
             <div className="ff-mobile-topbar-right">
-              <span className="ff-mobile-btn" aria-hidden title="Notifications">
-                🔔
+              <span
+                className="ff-mobile-btn ff-mobile-btn--notify"
+                aria-hidden
+                title="Notifications"
+              >
+                <IoNotificationsOutline size={18} />
+                <span className="ff-notify-dot" />
               </span>
               <Link className="ff-mobile-btn" to="/profile" title="Settings">
-                ⚙️
+                <IoSettingsOutline size={18} />
               </Link>
             </div>
           </header>
@@ -151,35 +199,45 @@ export default function AppShell() {
           className={({ isActive }) => `ff-nav-tab${isActive ? " ff-active" : ""}`}
           to="/"
         >
-          <span className="ff-nav-tab-icon">🏠</span>
+          <span className="ff-nav-tab-icon" aria-hidden>
+            <IconDashboard size={22} />
+          </span>
           <span className="ff-nav-tab-label">Home</span>
         </NavLink>
         <NavLink
           className={({ isActive }) => `ff-nav-tab${isActive ? " ff-active" : ""}`}
           to="/workouts"
         >
-          <span className="ff-nav-tab-icon">📋</span>
+          <span className="ff-nav-tab-icon" aria-hidden>
+            <IconWorkouts size={22} />
+          </span>
           <span className="ff-nav-tab-label">Plan</span>
         </NavLink>
         <NavLink
           className={({ isActive }) => `ff-nav-tab${isActive ? " ff-active" : ""}`}
           to="/calendar"
         >
-          <span className="ff-nav-tab-icon">📅</span>
+          <span className="ff-nav-tab-icon" aria-hidden>
+            <IconCalendar size={22} />
+          </span>
           <span className="ff-nav-tab-label">Calendar</span>
         </NavLink>
         <NavLink
           className={({ isActive }) => `ff-nav-tab${isActive ? " ff-active" : ""}`}
           to="/nutrition"
         >
-          <span className="ff-nav-tab-icon">🔥</span>
+          <span className="ff-nav-tab-icon" aria-hidden>
+            <IconNutrition size={22} />
+          </span>
           <span className="ff-nav-tab-label">Nutrition</span>
         </NavLink>
         <NavLink
           className={({ isActive }) => `ff-nav-tab${isActive ? " ff-active" : ""}`}
           to="/profile"
         >
-          <span className="ff-nav-tab-icon">👤</span>
+          <span className="ff-nav-tab-icon" aria-hidden>
+            <IoPersonOutline size={22} />
+          </span>
           <span className="ff-nav-tab-label">Profile</span>
         </NavLink>
       </nav>

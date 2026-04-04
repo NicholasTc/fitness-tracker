@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { API_BASE, bearerAuth, jsonAuthHeaders, parseJsonSafe } from "../lib/api.js";
+import { IoChevronBackOutline } from "../icons/fitflowIonIcons.js";
 
 function emptyExercise() {
   return { name: "", sets: 3, reps: 10, weightKg: "" };
@@ -154,8 +155,11 @@ export default function WorkoutEditor() {
       <h1 className="ff-page-title">
         {isNew ? "New workout" : "Edit workout"}
       </h1>
-      <p className="ff-meta">
-        <Link to="/workouts">← Workouts</Link>
+      <p className="ff-meta ff-meta-back">
+        <Link to="/workouts">
+          <IoChevronBackOutline className="ff-back-ico" aria-hidden />
+          Workouts
+        </Link>
       </p>
 
       {loading && <p className="ff-meta">Loading…</p>}

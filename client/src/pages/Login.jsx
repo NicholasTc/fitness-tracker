@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
+import {
+  AVATAR_ICON_LIST,
+  AVATAR_STORAGE_KEY,
+  IoCloseOutline,
+  IoPulseOutline,
+  NAV_ICON,
+} from "../icons/fitflowIonIcons.js";
 import "../styles/fitflow-landing.css";
-
-const AVATAR_KEY = "fitflow_avatar_emoji";
-const AVATARS = ["🏋️", "🧘", "🏃", "💪", "🚴", "⭐"];
 
 export default function Login() {
   const { token, login, register } = useAuth();
@@ -59,7 +63,10 @@ export default function Login() {
     setSignupError(null);
     setSignupSubmitting(true);
     try {
-      localStorage.setItem(AVATAR_KEY, AVATARS[avatarIdx] || "🏋️");
+      localStorage.setItem(
+        AVATAR_STORAGE_KEY,
+        String(Math.min(avatarIdx, AVATAR_ICON_LIST.length - 1)),
+      );
       await register(signupEmail, signupPassword);
       setModalOpen(false);
       setSearchParams({});
@@ -84,7 +91,10 @@ export default function Login() {
       <div className="landing">
         <div className="landing-left">
           <div className="brand">
-            <span className="brand-icon">◉</span> FitFlow
+            <span className="brand-icon" aria-hidden>
+              <IoPulseOutline size={22} />
+            </span>{" "}
+            FitFlow
           </div>
 
           <h1 className="welcome-heading">
@@ -99,21 +109,28 @@ export default function Login() {
 
           <div className="feature-list">
             {[
-              ["📋", "Workout Planner", "Custom routines & expert plans"],
-              ["📅", "Calendar", "Schedule & visualize your week"],
-              ["🔥", "Calorie Tracker", "Log meals & hit your macros"],
-              ["🧮", "TDEE Calculator", "Personalized nutrition targets"],
-              ["🤖", "AI Coach", "Smart feedback & recommendations"],
-              ["📊", "Progress Tracker", "Body metrics, PRs & streaks"],
-            ].map(([icon, name, desc]) => (
+              [NAV_ICON.workouts, "Workout Planner", "Custom routines & expert plans"],
+              [NAV_ICON.calendar, "Calendar", "Schedule & visualize your week"],
+              [NAV_ICON.nutrition, "Calorie Tracker", "Log meals & hit your macros"],
+              [NAV_ICON.tdee, "TDEE Calculator", "Personalized nutrition targets"],
+              [NAV_ICON.aiCoach, "AI Coach", "Smart feedback & recommendations"],
+              [NAV_ICON.progress, "Progress Tracker", "Body metrics, PRs & streaks"],
+            ].map((row) => {
+              const IconComponent = row[0];
+              const name = row[1];
+              const desc = row[2];
+              return (
               <div key={name} className="feature-item">
-                <div className="feature-icon">{icon}</div>
+                <div className="feature-icon" aria-hidden>
+                  <IconComponent size={22} />
+                </div>
                 <div>
                   <div className="feature-name">{name}</div>
                   <div className="feature-desc">{desc}</div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -199,7 +216,7 @@ export default function Login() {
             onClick={closeModal}
             aria-label="Close"
           >
-            ✕
+            <IoCloseOutline size={20} />
           </button>
 
           <h2>Create your profile</h2>
@@ -261,15 +278,15 @@ export default function Login() {
             <div className="avatar-select">
               <label>Choose your avatar</label>
               <div className="avatar-options">
-                {AVATARS.map((em, i) => (
+                {AVATAR_ICON_LIST.map((Icon, i) => (
                   <button
-                    key={em}
+                    key={i}
                     type="button"
                     className={`avatar-option${i === avatarIdx ? " selected" : ""}`}
                     onClick={() => setAvatarIdx(i)}
-                    aria-label={`Avatar ${em}`}
+                    aria-label={`Avatar option ${i + 1}`}
                   >
-                    {em}
+                    <Icon size={22} />
                   </button>
                 ))}
               </div>

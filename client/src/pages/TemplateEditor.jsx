@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { API_BASE, bearerAuth, jsonAuthHeaders, parseJsonSafe } from "../lib/api.js";
+import { IoChevronBackOutline } from "../icons/fitflowIonIcons.js";
 
 function emptyExercise() {
   return { name: "", sets: 3, reps: 10, weightKg: "" };
@@ -145,8 +146,11 @@ export default function TemplateEditor() {
       <h1 className="ff-page-title">
         {isNew ? "New template" : "Edit template"}
       </h1>
-      <p className="ff-meta">
-        <Link to="/templates">← Templates</Link>
+      <p className="ff-meta ff-meta-back">
+        <Link to="/templates">
+          <IoChevronBackOutline className="ff-back-ico" aria-hidden />
+          Templates
+        </Link>
       </p>
 
       {loading && <p className="ff-meta">Loading…</p>}

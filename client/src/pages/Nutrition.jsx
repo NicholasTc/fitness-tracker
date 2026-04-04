@@ -2,6 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { API_BASE, bearerAuth, jsonAuthHeaders, parseJsonSafe } from "../lib/api.js";
+import {
+  IoChevronBackOutline,
+  IoChevronForwardOutline,
+} from "../icons/fitflowIonIcons.js";
 
 function todayYmd() {
   return new Date().toISOString().slice(0, 10);
@@ -151,7 +155,7 @@ export default function Nutrition() {
           onClick={() => setDay((d) => shiftDay(d, -1))}
           aria-label="Previous day"
         >
-          ←
+          <IoChevronBackOutline size={18} aria-hidden />
         </button>
         <label>
           <span className="sr-only">Date</span>
@@ -167,7 +171,7 @@ export default function Nutrition() {
           onClick={() => setDay((d) => shiftDay(d, 1))}
           aria-label="Next day"
         >
-          →
+          <IoChevronForwardOutline size={18} aria-hidden />
         </button>
         <button
           type="button"

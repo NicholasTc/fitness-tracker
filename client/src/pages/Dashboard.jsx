@@ -2,6 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { API_BASE, bearerAuth, parseJsonSafe } from "../lib/api.js";
+import {
+  IoBarbellOutline,
+  IoCalendarOutline,
+  IoChevronForwardOutline,
+  IoFlameOutline,
+  IoHardwareChipOutline,
+  IoNotificationsOutline,
+  IoPlayOutline,
+} from "../icons/fitflowIonIcons.js";
 
 function todayYmd() {
   return new Date().toISOString().slice(0, 10);
@@ -226,9 +235,17 @@ export default function Dashboard() {
           <p>Here&apos;s your plan for today</p>
         </div>
         <div className="ff-topbar-actions">
-          <span className="ff-date-badge">📅 {dateBadge}</span>
-          <span className="ff-icon-btn" title="Notifications" aria-hidden>
-            🔔
+          <span className="ff-date-badge">
+            <IoCalendarOutline className="ff-inline-ico" aria-hidden />
+            {dateBadge}
+          </span>
+          <span
+            className="ff-icon-btn ff-icon-btn--notify"
+            title="Notifications"
+            aria-hidden
+          >
+            <IoNotificationsOutline size={18} />
+            <span className="ff-notify-dot" />
           </span>
         </div>
       </div>
@@ -264,12 +281,18 @@ export default function Dashboard() {
                 className={`ff-hero-cta${completedToday ? " ff-is-completed" : ""}`}
                 to={`/workouts/${primaryWorkout.id}`}
               >
-                {!completedToday && <span className="ff-play-icon">▶</span>}
+                {!completedToday && (
+                  <span className="ff-play-icon">
+                    <IoPlayOutline size={13} />
+                  </span>
+                )}
                 {completedToday ? "View workout" : "Open workout"}
               </Link>
             ) : (
               <Link className="ff-hero-cta" to="/workouts/new">
-                <span className="ff-play-icon">▶</span>
+                <span className="ff-play-icon">
+                  <IoPlayOutline size={13} />
+                </span>
                 New workout
               </Link>
             )}
@@ -362,7 +385,10 @@ export default function Dashboard() {
             {assistantTab === "coach" && (
               <div className="ff-assistant-pane ff-active">
                 <div className="ff-sec-header">
-                  <span className="ff-sec-title">🤖 AI Coach</span>
+                  <span className="ff-sec-title">
+                    <IoHardwareChipOutline className="ff-sec-ico" aria-hidden />
+                    AI Coach
+                  </span>
                   <span className="ff-muted-note" style={{ fontSize: "0.72rem" }}>
                     Post-MVP
                   </span>
@@ -378,7 +404,10 @@ export default function Dashboard() {
             {assistantTab === "nutrition" && (
               <div className="ff-assistant-pane ff-active">
                 <div className="ff-sec-header">
-                  <span className="ff-sec-title">🔥 Nutrition</span>
+                  <span className="ff-sec-title">
+                    <IoFlameOutline className="ff-sec-ico" aria-hidden />
+                    Nutrition
+                  </span>
                   <Link className="ff-sec-link" to="/nutrition">
                     Full Log
                   </Link>
@@ -433,7 +462,10 @@ export default function Dashboard() {
             {assistantTab === "calendar" && (
               <div className="ff-assistant-pane ff-active">
                 <div className="ff-sec-header">
-                  <span className="ff-sec-title">📅 Calendar</span>
+                  <span className="ff-sec-title">
+                    <IoCalendarOutline className="ff-sec-ico" aria-hidden />
+                    Calendar
+                  </span>
                   <Link className="ff-sec-link" to="/calendar">
                     Full View
                   </Link>
@@ -512,7 +544,10 @@ export default function Dashboard() {
           </div>
 
           <div className="ff-quiet-widget">
-            <div className="ff-quiet-widget-title">🔥 Nutrition Snapshot</div>
+            <div className="ff-quiet-widget-title">
+              <IoFlameOutline className="ff-quiet-widget-ico" aria-hidden />
+              Nutrition Snapshot
+            </div>
             <div className="ff-compact-macro-list">
               <div className="ff-compact-macro-row">
                 <span
@@ -536,12 +571,16 @@ export default function Dashboard() {
               className="ff-compact-link"
               onClick={() => setAssistantTab("nutrition")}
             >
-              Open Nutrition tab →
+              Open Nutrition tab
+              <IoChevronForwardOutline className="ff-link-chevron" aria-hidden />
             </button>
           </div>
 
           <div className="ff-quiet-widget">
-            <div className="ff-quiet-widget-title">📅 Upcoming Workouts</div>
+            <div className="ff-quiet-widget-title">
+              <IoBarbellOutline className="ff-quiet-widget-ico" aria-hidden />
+              Upcoming Workouts
+            </div>
             <div className="ff-upcoming-mini-list">
               {todayWorkouts.slice(0, 3).map((w) => (
                 <div key={w.id} className="ff-upcoming-mini-item">
@@ -564,7 +603,8 @@ export default function Dashboard() {
               className="ff-compact-link"
               onClick={() => setAssistantTab("calendar")}
             >
-              Open Calendar tab →
+              Open Calendar tab
+              <IoChevronForwardOutline className="ff-link-chevron" aria-hidden />
             </button>
           </div>
         </div>
