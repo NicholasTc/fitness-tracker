@@ -1,0 +1,16 @@
+---
+description: Ask for clarification on ambiguous product scope; do not guess requirements
+alwaysApply: true
+---
+
+# FitFlow — clarification over assumption
+
+Before implementing **user-visible behavior**, **data models**, **API contracts**, or **business rules** that are not already specified:
+
+1. **Read** `docs/FEATURES.md` and `docs/IMPLEMENTATION_STAGES.md` for the current stage.
+2. **Read** `docs/DEVELOPMENT_PROTOCOL.md` for when to ask vs when small technical choices are fine.
+3. If something material is still open (e.g. schema choice, UX flow, edge cases), **ask the user** and **do not invent** details to move faster.
+
+After the user decides, **update `docs/FEATURES.md`** (or the relevant doc) so the decision is recorded.
+
+Small reversible choices (naming, file layout, standard Express/Mongoose patterns) do not require a product question unless `FEATURES.md` constrains them.
