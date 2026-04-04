@@ -29,7 +29,7 @@
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.07);
   --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.1);
-  --sidebar-w: 232px;
+  --sidebar-w: 268px;
 
   font-family: var(--font-b);
   color: var(--text);
@@ -267,6 +267,8 @@ a.ff-user-pill:hover {
 .ff-main-inner {
   width: 100%;
   max-width: 1240px;
+  margin-left: auto;
+  margin-right: auto;
   display: flex;
   flex-direction: column;
   gap: 28px;
