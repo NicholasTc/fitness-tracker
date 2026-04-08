@@ -1,4 +1,7 @@
 import "dotenv/config";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -16,6 +19,9 @@ const PORT = process.env.PORT || 5050;
 const clientOrigin = process.env.CLIENT_ORIGIN || "http://localhost:5173";
 const MONGODB_URI = process.env.MONGODB_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const clientDist = path.join(__dirname, "../client/dist");
 
 const app = express();
 
@@ -40,6 +46,18 @@ app.use("/api/personal-records", personalRecordsRouter);
 app.use("/api/progress-photos", progressPhotosRouter);
 app.use("/api/workout-templates", workoutTemplatesRouter);
 app.use("/api/workouts", workoutsRouter);
+
+// Production SPA: Vite build in client/dist (same origin as API)
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+  app.get("*", (req, res) => {
+    if (req.path.startsWith("/api")) {
+      res.status(404).json({ error: "Not found" });
+      return;
+    }
+    res.sendFile(path.join(clientDist, "index.html"));
+  });
+}
 
 app.use((err, req, res, next) => {
   if (err.name === "ValidationError") {
