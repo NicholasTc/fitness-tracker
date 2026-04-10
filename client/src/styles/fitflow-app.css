@@ -1456,6 +1456,141 @@ button.ff-confirm-btn.ff-primary {
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
+.ff-workouts-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.ff-workouts-new {
+  margin-top: 0;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ff-workout-week-wrap {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.ff-workout-week-head {
+  padding: 0.95rem 1rem;
+}
+
+.ff-workout-week-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.ff-workout-week-top h2 {
+  margin: 0;
+  font-family: var(--font-h);
+  font-size: 1.02rem;
+  font-weight: 800;
+}
+
+.ff-week-nav {
+  display: inline-flex;
+  gap: 0.45rem;
+}
+
+.ff-week-nav .ff-btn-secondary {
+  margin-top: 0;
+  padding: 7px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ff-workout-week-meta {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  color: var(--text-2);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.ff-workout-week-cards {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.ff-workout-item-card {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr) auto;
+}
+
+.ff-workout-item-card.ff-strength .ff-workout-item-bar {
+  background: #4c7fd7;
+}
+
+.ff-workout-item-bar {
+  background: #27bfd6;
+}
+
+.ff-workout-item-main {
+  padding: 0.85rem 0.9rem;
+  min-width: 0;
+}
+
+.ff-workout-item-meta {
+  color: var(--text-3);
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 0.32rem;
+}
+
+.ff-workout-item-title {
+  display: inline-block;
+  font-family: var(--font-h);
+  font-size: 1.18rem;
+  line-height: 1.15;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.ff-workout-item-bottom {
+  margin-top: 0.5rem;
+}
+
+.ff-workout-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.27rem 0.55rem;
+  border-radius: 8px;
+  background: #ecf5ff;
+  color: #3f69bf;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.ff-workout-item-actions {
+  width: 86px;
+  display: grid;
+  align-content: center;
+  justify-items: end;
+  gap: 0.3rem;
+  padding: 0.75rem 0.8rem 0.75rem 0.35rem;
+}
+
+.ff-workout-item-actions .ff-linkish {
+  font-size: 0.8rem;
+}
+
 @media (max-width: 1200px) {
   .ff-dashboard-grid {
     grid-template-columns: 1fr;
@@ -1630,6 +1765,18 @@ a.ff-nav-tab.ff-active .ff-nav-tab-icon {
   .ff-quiet-widget {
     max-width: 100%;
     min-width: 0;
+  }
+
+  .ff-workout-item-card {
+    grid-template-columns: 7px minmax(0, 1fr);
+  }
+
+  .ff-workout-item-actions {
+    width: auto;
+    padding: 0 0.9rem 0.85rem;
+    justify-items: start;
+    display: flex;
+    gap: 0.8rem;
   }
 
   .ff-bottom-nav {

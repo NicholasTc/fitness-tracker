@@ -53,6 +53,7 @@ These are two different ideas:
 ### 2. Workouts
 
 - **Sessions:** **Create, view, edit, delete** workout sessions tied to the logged-in user; **structured content** (name/date, **exercises**, **sets**, **reps**, optional **weight**).
+- **Workout Planner list UI:** include a **single-week view** (`Week of ...`) with week navigation; show only one week at a time with that week's planned workouts.
 - **Templates:** **Create, view, edit, delete** reusable workout templates (same structure as a session minus a fixed “performed on” date, or equivalent model agreed at implementation).
 - **From template → session:** Flow to instantiate a session from a template on a chosen date.
 - **List and detail** views aligned with `design-proposal/` where practical.

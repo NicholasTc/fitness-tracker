@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitFlow — Workout Planner (Modern Concept)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4f6fb;
+      --surface: #ffffff;
+      --surface-2: #f9faff;
+      --text: #161a2a;
+      --muted: #6b7288;
+      --line: #e9ecf7;
+      --primary: #4f46e5;
+      --primary-2: #6366f1;
+      --accent: #10b981;
+      --warning: #f59e0b;
+      --r-sm: 10px;
+      --r-md: 14px;
+      --r-lg: 20px;
+      --r-xl: 28px;
+      --shadow-sm: 0 2px 10px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 500px at -20% -10%, #ecefff 0%, transparent 55%),
+        radial-gradient(900px 450px at 110% -10%, #e9f5ff 0%, transparent 52%),
+        var(--bg);
+      min-height: 100vh;
+      padding: 28px;
+    }
+
+    .planner-shell {
+      max-width: 1220px;
+      margin: 0 auto;
+      display: grid;
+      gap: 20px;
+    }
+
+    .planner-header {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-xl);
+      box-shadow: var(--shadow-sm);
+      padding: 22px;
+      display: grid;
+      grid-template-columns: 1.2fr auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .title-wrap h1 {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-size: clamp(1.4rem, 2vw, 1.9rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .title-wrap p {
+      color: var(--muted);
+      font-size: 0.92rem;
+      max-width: 60ch;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 11px 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 8px 18px rgba(79, 70, 229, 0.22);
+    }
+
+    .btn-soft {
+      color: var(--primary);
+      background: #eef0ff;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 7px;
+      font-weight: 700;
+    }
+
+    .stat-value {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-xl);
+      box-shadow: var(--shadow-sm);
+      min-width: 0;
+    }
+
+    .panel-head {
+      padding: 18px 20px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .panel-title {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-size: 1.02rem;
+      font-weight: 800;
+    }
+
+    .muted-link {
+      font-size: 0.8rem;
+      color: var(--primary);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .workout-table-wrap {
+      padding: 0 14px 14px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 620px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      overflow: hidden;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 14px;
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    th {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-size: 0.74rem;
+      color: #556;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: #f3f6ff;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .status-pill {
+      display: inline-flex;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .status-planned { background: #e9f7f1; color: #0f8a5f; }
+    .status-completed { background: #e8efff; color: #334bcb; }
+
+    .action-row {
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+
+    .today-focus {
+      margin: 16px;
+      border-radius: var(--r-lg);
+      background: linear-gradient(145deg, #4f46e5, #5b6df2);
+      color: white;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .today-focus h3 {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-size: 1.04rem;
+      margin-bottom: 4px;
+    }
+
+    .today-focus p {
+      font-size: 0.86rem;
+      opacity: 0.88;
+    }
+
+    .today-focus .btn {
+      background: white;
+      color: var(--primary);
+      padding-inline: 14px;
+    }
+
+    .templates {
+      padding: 0 14px 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .template-card {
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 12px;
+      background: var(--surface-2);
+      display: grid;
+      gap: 8px;
+    }
+
+    .template-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .template-name {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .template-meta {
+      display: flex;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      flex-wrap: wrap;
+    }
+
+    .week-strip {
+      padding: 0 14px 16px;
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .day-col {
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      background: var(--surface-2);
+      padding: 10px 8px;
+      min-height: 120px;
+      display: grid;
+      align-content: start;
+      gap: 8px;
+    }
+
+    .day-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.74rem;
+      color: var(--muted);
+    }
+
+    .mini-event {
+      border-radius: 10px;
+      padding: 7px 8px;
+      background: #edf1ff;
+      color: #3040b3;
+      font-size: 0.73rem;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .mini-event.warn {
+      background: #fff5e8;
+      color: #b36203;
+    }
+
+    .mini-event.done {
+      background: #eafaf2;
+      color: #0f8a5f;
+    }
+
+    @media (max-width: 1020px) {
+      body { padding: 16px; }
+      .layout { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .planner-header { grid-template-columns: 1fr; }
+      .header-actions { justify-content: flex-start; }
+      .week-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+      .stats-row { grid-template-columns: 1fr; }
+      .today-focus { grid-template-columns: 1fr; }
+      .week-strip { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="planner-shell">
+    <header class="planner-header">
+      <div class="title-wrap">
+        <h1>Workout Planner — Concept B</h1>
+        <p>
+          A cleaner, modern planning experience inspired by contemporary fitness dashboards:
+          stronger hierarchy, quick actions, and easier scanability for sessions/templates.
+        </p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-soft">Import Template</button>
+        <button class="btn btn-primary">+ New Workout</button>
+      </div>
+    </header>
+
+    <section class="stats-row">
+      <article class="stat-card"><div class="stat-label">This Week</div><div class="stat-value">5 Sessions</div></article>
+      <article class="stat-card"><div class="stat-label">Completed</div><div class="stat-value">3 / 5</div></article>
+      <article class="stat-card"><div class="stat-label">Total Volume</div><div class="stat-value">14,320 kg</div></article>
+      <article class="stat-card"><div class="stat-label">Streak</div><div class="stat-value">9 days</div></article>
+    </section>
+
+    <section class="layout">
+      <article class="panel">
+        <div class="panel-head">
+          <h2 class="panel-title">Planned & Recent Workouts</h2>
+          <a href="#" class="muted-link">Filter by date</a>
+        </div>
+        <div class="workout-table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Date</th><th>Exercises</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead>
+            <tbody>
+              <tr><td>Upper Strength A</td><td>Apr 10, 2026</td><td>7</td><td><span class="status-pill status-planned">Planned</span></td><td><div class="action-row"><button class="chip">Open</button><button class="chip">Delete</button></div></td></tr>
+              <tr><td>Lower Power</td><td>Apr 9, 2026</td><td>6</td><td><span class="status-pill status-completed">Completed</span></td><td><div class="action-row"><button class="chip">Open</button><button class="chip">Duplicate</button></div></td></tr>
+              <tr><td>Push Hypertrophy</td><td>Apr 8, 2026</td><td>5</td><td><span class="status-pill status-completed">Completed</span></td><td><div class="action-row"><button class="chip">Open</button><button class="chip">Delete</button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="today-focus">
+          <div><h3>Today’s Focus: Upper Strength A</h3><p>7 exercises · 65 min target · 2 supersets</p></div>
+          <button class="btn">Start Session</button>
+        </div>
+        <div class="panel-head"><h2 class="panel-title">Templates</h2><a href="#" class="muted-link">Manage</a></div>
+        <div class="templates">
+          <div class="template-card"><div class="template-top"><div class="template-name">Push Day (Hypertrophy)</div><button class="chip">Use</button></div><div class="template-meta"><span>5 exercises</span><span>Chest / Shoulders / Triceps</span></div></div>
+          <div class="template-card"><div class="template-top"><div class="template-name">Pull Day (Volume)</div><button class="chip">Use</button></div><div class="template-meta"><span>6 exercises</span><span>Back / Biceps / Rear Delts</span></div></div>
+          <div class="template-card"><div class="template-top"><div class="template-name">Leg Day (Strength)</div><button class="chip">Use</button></div><div class="template-meta"><span>7 exercises</span><span>Quads / Glutes / Hamstrings</span></div></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><h2 class="panel-title">Week Timeline</h2><a href="#" class="muted-link">Open full calendar</a></div>
+      <div class="week-strip">
+        <div class="day-col"><div class="day-head"><strong>Mon</strong><span>Apr 7</span></div><div class="mini-event done">Pull Volume</div></div>
+        <div class="day-col"><div class="day-head"><strong>Tue</strong><span>Apr 8</span></div><div class="mini-event done">Push Hypertrophy</div></div>
+        <div class="day-col"><div class="day-head"><strong>Wed</strong><span>Apr 9</span></div><div class="mini-event warn">Recovery + Core</div></div>
+        <div class="day-col"><div class="day-head"><strong>Thu</strong><span>Apr 10</span></div><div class="mini-event">Upper Strength A</div></div>
+        <div class="day-col"><div class="day-head"><strong>Fri</strong><span>Apr 11</span></div><div class="mini-event">Lower Power</div></div>
+        <div class="day-col"><div class="day-head"><strong>Sat</strong><span>Apr 12</span></div><div class="mini-event warn">Mobility Block</div></div>
+        <div class="day-col"><div class="day-head"><strong>Sun</strong><span>Apr 13</span></div><div class="mini-event">Rest Day</div></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

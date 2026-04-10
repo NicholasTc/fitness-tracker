@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitFlow — Workout Planner (Minimal)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --bg: #f2f4f7;
+      --surface: #ffffff;
+      --text: #1d2430;
+      --muted: #6f7785;
+      --line: #e7ebf1;
+      --teal: #27bfd6;
+      --blue: #4c7fd7;
+      --green: #1bbf95;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 18px 14px 28px;
+    }
+
+    .shell {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .week-bar {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px 14px 12px;
+      margin-bottom: 12px;
+    }
+
+    .week-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .week-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .close-btn {
+      border: none;
+      background: transparent;
+      font-size: 1.3rem;
+      line-height: 1;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .week-metrics {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 600;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+
+    .progress-track {
+      width: 90px;
+      height: 6px;
+      border-radius: 999px;
+      background: #dbe2ed;
+      overflow: hidden;
+      margin-inline: 8px;
+      flex-shrink: 0;
+    }
+
+    .progress-fill {
+      width: 42%;
+      height: 100%;
+      background: #94a8c7;
+    }
+
+    .cards {
+      display: grid;
+      gap: 10px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      display: grid;
+      grid-template-columns: 8px 1fr auto;
+      min-height: 112px;
+      overflow: hidden;
+    }
+
+    .bar {
+      background: var(--teal);
+    }
+
+    .card.strength .bar {
+      background: var(--blue);
+    }
+
+    .card-main {
+      padding: 12px 12px 12px 12px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .name {
+      font-size: 2rem;
+      font-size: clamp(1.35rem, 4vw, 1.95rem);
+      font-weight: 700;
+      line-height: 1.08;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .tag-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .tag.run {
+      color: #129ab1;
+      background: #d7f6fb;
+    }
+
+    .tag.strength {
+      color: #3f69bf;
+      background: #deebff;
+    }
+
+    .status-col {
+      width: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 16px;
+    }
+
+    .check {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #d9dee8;
+      border-radius: 8px;
+      background: #fff;
+      appearance: none;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .check:checked {
+      border-color: var(--green);
+      background: #ebfbf5;
+    }
+
+    .check:checked::after {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 6px;
+      border-left: 2px solid var(--green);
+      border-bottom: 2px solid var(--green);
+      transform: rotate(-45deg);
+      top: 6px;
+      left: 5px;
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="week-bar">
+      <div class="week-top">
+        <h1 class="week-title">Week 3 Overview</h1>
+        <button class="close-btn" aria-label="Close">×</button>
+      </div>
+      <div class="week-metrics">
+        <span>Total Workouts: 5</span>
+        <span class="progress-track"><span class="progress-fill"></span></span>
+        <span>Distance: 8.2mi</span>
+      </div>
+    </section>
+
+    <section class="cards">
+      <article class="card">
+        <div class="bar"></div>
+        <div class="card-main">
+          <div class="meta">Tuesday, Jan 28 · 30m - 35m</div>
+          <div class="name">New Week</div>
+          <div class="tag-line">
+            <span class="tag run">Walk-Run</span>
+            <span>· 2.5mi</span>
+          </div>
+        </div>
+        <div class="status-col">
+          <input class="check" type="checkbox" aria-label="Mark completed" />
+        </div>
+      </article>
+
+      <article class="card strength">
+        <div class="bar"></div>
+        <div class="card-main">
+          <div class="meta">Wednesday, Jan 29 · 25m - 35m</div>
+          <div class="name">Upper Body Strength</div>
+          <div class="tag-line">
+            <span class="tag strength">Strength</span>
+          </div>
+        </div>
+        <div class="status-col">
+          <input class="check" type="checkbox" aria-label="Mark completed" />
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="bar"></div>
+        <div class="card-main">
+          <div class="meta">Thursday, Jan 30 · 35m - 40m</div>
+          <div class="name">Stepping It Up</div>
+          <div class="tag-line">
+            <span class="tag run">Walk-Run</span>
+            <span>· 2.9mi</span>
+          </div>
+        </div>
+        <div class="status-col">
+          <input class="check" type="checkbox" aria-label="Mark completed" />
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
