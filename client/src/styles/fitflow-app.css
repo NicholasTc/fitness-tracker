@@ -37,6 +37,8 @@
   line-height: 1.5;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  width: 100%;
+  overflow-x: clip;
 }
 
 .ff-app-root *,
@@ -272,6 +274,7 @@ a.ff-user-pill:hover {
   display: flex;
   flex-direction: column;
   gap: 28px;
+  min-width: 0;
 }
 
 /* Top bar */
@@ -614,9 +617,9 @@ button.ff-hero-cta:hover:not(:disabled) {
 }
 
 .ff-plan-footer {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
   margin: 2px 22px 16px;
   padding-top: 12px;
@@ -633,9 +636,11 @@ button.ff-plan-edit-btn {
   background: var(--surface);
   border: 1px solid var(--border-light);
   border-radius: var(--r-full);
-  padding: 6px 10px;
+  padding: 7px 12px;
   cursor: pointer;
   font-family: var(--font-b);
+  white-space: nowrap;
+  justify-self: end;
 }
 
 /* Assistant panel */
@@ -1307,6 +1312,10 @@ button.ff-confirm-btn.ff-primary {
   gap: 0.35rem 0.75rem;
 }
 
+.ff-food-edit-grid {
+  margin-top: 0.35rem;
+}
+
 .ff-food-log-cals {
   font-weight: 600;
   color: var(--text);
@@ -1611,6 +1620,16 @@ a.ff-nav-tab.ff-active .ff-nav-tab-icon {
   .ff-main {
     padding: 16px 16px calc(var(--ff-bottom-nav-h, 72px) + 24px);
     padding-top: 8px;
+  }
+
+  .ff-page,
+  .ff-card,
+  .ff-focus-card,
+  .ff-hero-action,
+  .ff-assistant-panel,
+  .ff-quiet-widget {
+    max-width: 100%;
+    min-width: 0;
   }
 
   .ff-bottom-nav {

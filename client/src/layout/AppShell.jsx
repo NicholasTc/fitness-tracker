@@ -19,9 +19,8 @@ export default function AppShell() {
   const [avatarIdx] = useState(() => readAvatarIconIndex());
 
   const email = user?.email ?? "";
-  const displayName = email.includes("@")
-    ? email.split("@")[0]
-    : email || "You";
+  const displayName = (user?.firstName || "").trim()
+    || (email.includes("@") ? email.split("@")[0] : email || "You");
 
   function handleLogout() {
     logout();

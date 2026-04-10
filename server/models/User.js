@@ -19,6 +19,16 @@ const profileSchema = new mongoose.Schema(
 
 const userSchema = new mongoose.Schema(
   {
+    firstName: {
+      type: String,
+      trim: true,
+      maxlength: 80,
+    },
+    lastName: {
+      type: String,
+      trim: true,
+      maxlength: 80,
+    },
     email: {
       type: String,
       required: true,

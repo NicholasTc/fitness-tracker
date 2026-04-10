@@ -30,6 +30,8 @@
   line-height: 1.6;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  width: 100%;
+  overflow-x: clip;
 }
 
 .ff-landing-root *,
@@ -241,6 +243,11 @@
   align-items: center;
   gap: 6px;
   color: var(--text-2);
+}
+
+.ff-landing-root .ff-password-toggle {
+  margin-top: 8px;
+  font-size: 0.78rem;
 }
 
 .ff-landing-root .remember input[type="checkbox"] {

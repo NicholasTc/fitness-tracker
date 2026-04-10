@@ -25,12 +25,14 @@ function signToken(user) {
 }
 
 /**
- * POST /api/auth/register { email, password }
+ * POST /api/auth/register { email, password, firstName?, lastName? }
  */
 router.post("/register", async (req, res, next) => {
   try {
     const emailRaw = req.body?.email;
     const password = req.body?.password;
+    const firstNameRaw = req.body?.firstName;
+    const lastNameRaw = req.body?.lastName;
 
     if (!isValidEmail(emailRaw)) {
       res.status(400).json({ error: "Invalid email" });
@@ -45,13 +47,24 @@ router.post("/register", async (req, res, next) => {
 
     const email = emailRaw.trim().toLowerCase();
     const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
-    const user = await User.create({ email, passwordHash });
+    const firstName =
+      typeof firstNameRaw === "string"
+        ? firstNameRaw.trim().slice(0, 80) || undefined
+        : undefined;
+    const lastName =
+      typeof lastNameRaw === "string"
+        ? lastNameRaw.trim().slice(0, 80) || undefined
+        : undefined;
+
+    const user = await User.create({ email, passwordHash, firstName, lastName });
 
     const token = signToken(user);
     res.status(201).json({
       token,
       user: {
         id: user._id.toString(),
+        firstName: user.firstName || null,
+        lastName: user.lastName || null,
         email: user.email,
         theme: user.theme ?? "default",
       },
@@ -96,6 +109,8 @@ router.post("/login", async (req, res, next) => {
       token,
       user: {
         id: user._id.toString(),
+        firstName: user.firstName || null,
+        lastName: user.lastName || null,
         email: user.email,
         theme: user.theme ?? "default",
       },

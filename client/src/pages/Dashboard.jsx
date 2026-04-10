@@ -66,6 +66,8 @@ export default function Dashboard() {
   });
 
   const displayName = useMemo(() => {
+    const fn = (user?.firstName || "").trim();
+    if (fn) return fn;
     const em = user?.email || "";
     return em.includes("@") ? em.split("@")[0] : em || "there";
   }, [user]);

@@ -42,11 +42,16 @@ export function AuthProvider({ children }) {
     setAuth({ token: data.token, user: u });
   }, []);
 
-  const register = useCallback(async (email, password) => {
+  const register = useCallback(async (email, password, profile = {}) => {
     const res = await fetch(`${API_BASE}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({
+        email,
+        password,
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+      }),
     });
     const data = await parseJsonSafe(res);
     if (!res.ok) {

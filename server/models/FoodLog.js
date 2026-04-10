@@ -11,6 +11,9 @@ const foodLogSchema = new mongoose.Schema(
     /** Calendar day (UTC midnight for the logged day). */
     date: { type: Date, required: true, index: true },
     calories: { type: Number, required: true, min: 1, max: 50000 },
+    proteinG: { type: Number, min: 0, max: 1000 },
+    carbsG: { type: Number, min: 0, max: 1000 },
+    fatG: { type: Number, min: 0, max: 1000 },
     mealLabel: { type: String, maxlength: 80, trim: true },
     note: { type: String, maxlength: 500, trim: true },
   },

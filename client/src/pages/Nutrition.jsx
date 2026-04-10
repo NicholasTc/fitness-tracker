@@ -30,9 +30,15 @@ export default function Nutrition() {
   const [effectiveTargetCalories, setEffectiveTargetCalories] = useState(null);
 
   const [calories, setCalories] = useState("");
+  const [proteinG, setProteinG] = useState("");
+  const [carbsG, setCarbsG] = useState("");
+  const [fatG, setFatG] = useState("");
   const [mealLabel, setMealLabel] = useState("");
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState(null);
+  const [updating, setUpdating] = useState(false);
 
   const load = useCallback(async () => {
     if (!token) return;
@@ -88,6 +94,9 @@ export default function Nutrition() {
         body: JSON.stringify({
           date: day,
           calories: c,
+          proteinG: proteinG === "" ? undefined : Number(proteinG),
+          carbsG: carbsG === "" ? undefined : Number(carbsG),
+          fatG: fatG === "" ? undefined : Number(fatG),
           mealLabel: mealLabel.trim() || undefined,
           note: note.trim() || undefined,
         }),
@@ -102,6 +111,9 @@ export default function Nutrition() {
         throw new Error(data?.error || res.statusText || `HTTP ${res.status}`);
       }
       setCalories("");
+      setProteinG("");
+      setCarbsG("");
+      setFatG("");
       setMealLabel("");
       setNote("");
       await load();
@@ -136,6 +148,62 @@ export default function Nutrition() {
       await load();
     } catch (e) {
       setError(e.message || String(e));
+    }
+  }
+
+  function beginEdit(row) {
+    setEditingId(row.id);
+    setEditForm({
+      date: row.date || day,
+      calories: String(row.calories ?? ""),
+      proteinG: row.proteinG == null ? "" : String(row.proteinG),
+      carbsG: row.carbsG == null ? "" : String(row.carbsG),
+      fatG: row.fatG == null ? "" : String(row.fatG),
+      mealLabel: row.mealLabel || "",
+      note: row.note || "",
+    });
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditForm(null);
+  }
+
+  async function saveEdit() {
+    if (!token || !editingId || !editForm) return;
+    const c = Number(editForm.calories);
+    if (!Number.isFinite(c) || c < 1) return;
+    setUpdating(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_BASE}/api/food-logs/${editingId}`, {
+        method: "PATCH",
+        headers: jsonAuthHeaders(token),
+        body: JSON.stringify({
+          date: editForm.date,
+          calories: c,
+          proteinG: editForm.proteinG === "" ? null : Number(editForm.proteinG),
+          carbsG: editForm.carbsG === "" ? null : Number(editForm.carbsG),
+          fatG: editForm.fatG === "" ? null : Number(editForm.fatG),
+          mealLabel: editForm.mealLabel.trim() || null,
+          note: editForm.note.trim() || null,
+        }),
+      });
+      const data = await parseJsonSafe(res);
+      if (res.status === 401) {
+        logout();
+        navigate("/login", { replace: true });
+        return;
+      }
+      if (!res.ok) {
+        throw new Error(data?.error || res.statusText || `HTTP ${res.status}`);
+      }
+      cancelEdit();
+      await load();
+    } catch (e) {
+      setError(e.message || String(e));
+    } finally {
+      setUpdating(false);
     }
   }
 
@@ -257,6 +325,39 @@ export default function Nutrition() {
               maxLength={500}
               placeholder="What you ate"
             />
+            <label htmlFor="proteinG">Protein g (optional)</label>
+            <input
+              id="proteinG"
+              type="number"
+              min={0}
+              max={1000}
+              step={1}
+              value={proteinG}
+              onChange={(e) => setProteinG(e.target.value)}
+              placeholder="e.g. 35"
+            />
+            <label htmlFor="carbsG">Carbs g (optional)</label>
+            <input
+              id="carbsG"
+              type="number"
+              min={0}
+              max={1000}
+              step={1}
+              value={carbsG}
+              onChange={(e) => setCarbsG(e.target.value)}
+              placeholder="e.g. 42"
+            />
+            <label htmlFor="fatG">Fat g (optional)</label>
+            <input
+              id="fatG"
+              type="number"
+              min={0}
+              max={1000}
+              step={1}
+              value={fatG}
+              onChange={(e) => setFatG(e.target.value)}
+              placeholder="e.g. 12"
+            />
           </div>
           <button type="submit" className="ff-btn-primary" disabled={saving}>
             {saving ? "Adding…" : "Add"}
@@ -275,19 +376,124 @@ export default function Nutrition() {
           <ul className="ff-food-log-list">
             {entries.map((row) => (
               <li key={row.id}>
-                <div className="ff-food-log-row">
-                  <span className="ff-food-log-cals">{row.calories} kcal</span>
-                  <span className="ff-meta" style={{ flex: "1 1 12rem", margin: 0 }}>
-                    {[row.mealLabel, row.note].filter(Boolean).join(" · ") || "—"}
-                  </span>
-                  <button
-                    type="button"
-                    className="ff-linkish"
-                    onClick={() => handleDelete(row.id)}
-                  >
-                    Remove
-                  </button>
-                </div>
+                {editingId === row.id && editForm ? (
+                  <div className="ff-form-grid ff-food-edit-grid">
+                    <label>Date</label>
+                    <input
+                      type="date"
+                      value={editForm.date}
+                      onChange={(e) =>
+                        setEditForm((f) => ({ ...f, date: e.target.value }))
+                      }
+                    />
+                    <label>Calories</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={50000}
+                      step={1}
+                      value={editForm.calories}
+                      onChange={(e) =>
+                        setEditForm((f) => ({ ...f, calories: e.target.value }))
+                      }
+                    />
+                    <label>Protein g</label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={1000}
+                      step={1}
+                      value={editForm.proteinG}
+                      onChange={(e) =>
+                        setEditForm((f) => ({ ...f, proteinG: e.target.value }))
+                      }
+                    />
+                    <label>Carbs g</label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={1000}
+                      step={1}
+                      value={editForm.carbsG}
+                      onChange={(e) =>
+                        setEditForm((f) => ({ ...f, carbsG: e.target.value }))
+                      }
+                    />
+                    <label>Fat g</label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={1000}
+                      step={1}
+                      value={editForm.fatG}
+                      onChange={(e) =>
+                        setEditForm((f) => ({ ...f, fatG: e.target.value }))
+                      }
+                    />
+                    <label>Meal</label>
+                    <input
+                      value={editForm.mealLabel}
+                      onChange={(e) =>
+                        setEditForm((f) => ({ ...f, mealLabel: e.target.value }))
+                      }
+                    />
+                    <label>Note</label>
+                    <input
+                      value={editForm.note}
+                      onChange={(e) =>
+                        setEditForm((f) => ({ ...f, note: e.target.value }))
+                      }
+                    />
+                    <div />
+                    <div style={{ display: "flex", gap: "0.65rem", flexWrap: "wrap" }}>
+                      <button
+                        type="button"
+                        className="ff-btn-primary"
+                        disabled={updating}
+                        onClick={saveEdit}
+                      >
+                        {updating ? "Saving…" : "Save"}
+                      </button>
+                      <button
+                        type="button"
+                        className="ff-btn-secondary"
+                        onClick={cancelEdit}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="ff-food-log-row">
+                    <span className="ff-food-log-cals">{row.calories} kcal</span>
+                    <span className="ff-meta" style={{ flex: "1 1 12rem", margin: 0 }}>
+                      {[row.mealLabel, row.note].filter(Boolean).join(" · ") || "—"}
+                    </span>
+                    <span className="ff-meta" style={{ margin: 0 }}>
+                      {[
+                        row.proteinG != null ? `P ${row.proteinG}g` : null,
+                        row.carbsG != null ? `C ${row.carbsG}g` : null,
+                        row.fatG != null ? `F ${row.fatG}g` : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ") || "Macros —"}
+                    </span>
+                    <button
+                      type="button"
+                      className="ff-linkish"
+                      onClick={() => beginEdit(row)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      className="ff-linkish"
+                      onClick={() => handleDelete(row.id)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
               </li>
             ))}
           </ul>

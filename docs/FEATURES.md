@@ -21,7 +21,7 @@ A **single place** to run your fitness life: **plan and follow workouts**, **log
 | **Audience size** | **Two people** for now (you + one other). No need to design for a large public user base in MVP. |
 | **Desktop vs mobile** | **Both at the same level** for MVP: layouts and usability should be intentionally solid on **desktop and mobile** (responsive web, not native apps). |
 | **Workout data model** | See [Workouts: templates vs sessions](#workouts-templates-vs-sessions-explained). **MVP includes both:** structured **sessions** (on a date) **and** reusable **templates** (saved blueprints; start a session from a template). |
-| **Nutrition (MVP)** | **Manual entry** (calories per day, optional labels). **Barcode / external nutrition API** is **explicitly not MVP**; planned **later**. |
+| **Nutrition (MVP)** | **Manual entry** with calories plus **optional protein/carbs/fat grams**. Entries support **full edit** (date, calories, macros, label, note). **Barcode / external nutrition API** is **explicitly not MVP**; planned **later**. |
 | **AI coach** | **After MVP** — not required for the first full release. |
 | **Progress** | **In MVP:** **body measurements**, **progress photos**, and **lift PR history** (alongside workouts and calorie story). |
 | **Notifications** | **None** for now (no email or push in MVP). |
@@ -70,7 +70,8 @@ These are two different ideas:
 ### 4. Nutrition and daily eating (MVP)
 
 - **Daily calorie target** (from profile) vs **logged intake**.
-- **Manual** logging: date, calories, optional meal label or note.
+- **Manual** logging: date, calories, optional meal label/note, and optional macro grams (**protein/carbs/fat**).
+- **Edit existing entries** for all fields (date, calories, macros, meal label, note), plus delete.
 - **Totals** computed **server-side** where possible.
 
 **Later (not MVP):** external nutrition API, **barcode scanning**, richer food databases.

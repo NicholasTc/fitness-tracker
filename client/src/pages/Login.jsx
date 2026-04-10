@@ -15,6 +15,7 @@ export default function Login() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -23,6 +24,7 @@ export default function Login() {
   const [signupPassword, setSignupPassword] = useState("");
   const [signupFirst, setSignupFirst] = useState("");
   const [signupLast, setSignupLast] = useState("");
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [avatarIdx, setAvatarIdx] = useState(0);
   const [signupError, setSignupError] = useState(null);
   const [signupSubmitting, setSignupSubmitting] = useState(false);
@@ -67,7 +69,10 @@ export default function Login() {
         AVATAR_STORAGE_KEY,
         String(Math.min(avatarIdx, AVATAR_ICON_LIST.length - 1)),
       );
-      await register(signupEmail, signupPassword);
+      await register(signupEmail, signupPassword, {
+        firstName: signupFirst,
+        lastName: signupLast,
+      });
       setModalOpen(false);
       setSearchParams({});
     } catch (err) {
@@ -156,7 +161,7 @@ export default function Login() {
                 <label htmlFor="password">Password</label>
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   placeholder="Enter your password"
                   value={password}
@@ -164,6 +169,14 @@ export default function Login() {
                   required
                   minLength={8}
                 />
+                <label className="remember ff-password-toggle">
+                  <input
+                    type="checkbox"
+                    checked={showPassword}
+                    onChange={(e) => setShowPassword(e.target.checked)}
+                  />{" "}
+                  Show password
+                </label>
               </div>
 
               <div className="form-options">
@@ -265,7 +278,7 @@ export default function Login() {
               <label htmlFor="signupPassword">Password</label>
               <input
                 id="signupPassword"
-                type="password"
+                type={showSignupPassword ? "text" : "password"}
                 placeholder="Min. 8 characters"
                 value={signupPassword}
                 onChange={(e) => setSignupPassword(e.target.value)}
@@ -273,6 +286,14 @@ export default function Login() {
                 minLength={8}
                 autoComplete="new-password"
               />
+              <label className="remember ff-password-toggle">
+                <input
+                  type="checkbox"
+                  checked={showSignupPassword}
+                  onChange={(e) => setShowSignupPassword(e.target.checked)}
+                />{" "}
+                Show password
+              </label>
             </div>
 
             <div className="avatar-select">
