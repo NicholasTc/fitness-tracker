@@ -16,10 +16,12 @@ import {
   IoPersonOutline,
   IoPlayOutline,
   IoPulseOutline,
+  IoRefreshOutline,
   IoSettingsOutline,
   IoSparklesOutline,
   IoStarOutline,
   IoStatsChartOutline,
+  IoTrashOutline,
   IoWalkOutline,
 } from "react-icons/io5";
 
@@ -41,10 +43,12 @@ export {
   IoPersonOutline,
   IoPlayOutline,
   IoPulseOutline,
+  IoRefreshOutline,
   IoSettingsOutline,
   IoSparklesOutline,
   IoStarOutline,
   IoStatsChartOutline,
+  IoTrashOutline,
   IoWalkOutline,
 };
 

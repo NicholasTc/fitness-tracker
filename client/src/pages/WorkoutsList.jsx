@@ -5,6 +5,9 @@ import { API_BASE, bearerAuth, parseJsonSafe } from "../lib/api.js";
 import {
   IoChevronBackOutline,
   IoChevronForwardOutline,
+  IoPlayOutline,
+  IoRefreshOutline,
+  IoTrashOutline,
 } from "../icons/fitflowIonIcons.js";
 
 function startOfWeek(date) {
@@ -133,8 +136,14 @@ export default function WorkoutsList() {
         <Link className="ff-btn-primary ff-workouts-new" to="/workouts/new">
           New workout
         </Link>
-        <button type="button" className="ff-btn-secondary" onClick={load}>
-          Refresh
+        <button
+          type="button"
+          className="ff-workouts-refresh"
+          onClick={load}
+          aria-label="Refresh workouts"
+          title="Refresh workouts"
+        >
+          <IoRefreshOutline size={18} />
         </button>
       </div>
 
@@ -207,14 +216,17 @@ export default function WorkoutsList() {
                       </div>
                     </div>
                     <div className="ff-workout-item-actions">
-                      <Link className="ff-linkish" to={`/workouts/${w.id}`}>
-                        Open
+                      <Link className="ff-workout-open-btn" to={`/workouts/${w.id}`}>
+                        <IoPlayOutline size={13} aria-hidden />
+                        Open workout
                       </Link>
                       <button
                         type="button"
-                        className="ff-linkish"
+                        className="ff-workout-delete-btn"
                         onClick={() => handleDelete(w.id)}
+                        aria-label={`Delete ${w.name}`}
                       >
+                        <IoTrashOutline size={13} aria-hidden />
                         Delete
                       </button>
                     </div>
