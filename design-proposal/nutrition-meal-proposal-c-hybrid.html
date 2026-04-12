@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitFlow — Proposal C: Hybrid (quick vs build meal)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f5f4;
+      --surface: #ffffff;
+      --text: #1a1a1a;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --primary: #4f46e5;
+      --amber: #f59e0b;
+      --amber-bg: #fffbeb;
+      --primary-soft: #eef2ff;
+      --radius: 16px;
+      --font-h: "Plus Jakarta Sans", system-ui, sans-serif;
+      --font-b: "DM Sans", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-b);
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px 16px 48px;
+      line-height: 1.5;
+    }
+    .wrap { max-width: 560px; margin: 0 auto; }
+    .banner {
+      background: linear-gradient(135deg, #7c3aed, #5b21b6);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 20px 20px 18px;
+      margin-bottom: 20px;
+    }
+    .banner h1 {
+      font-family: var(--font-h);
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .banner p { font-size: 0.85rem; opacity: 0.94; max-width: 52ch; }
+    .tag {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(255,255,255,0.2);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .tab {
+      flex: 1;
+      font-family: var(--font-h);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      text-align: center;
+    }
+    .tab.active {
+      background: var(--primary-soft);
+      border-color: #c7d2fe;
+      color: var(--primary);
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px 18px;
+      margin-bottom: 14px;
+    }
+    .card h2 {
+      font-family: var(--font-h);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    input {
+      width: 100%;
+      font: inherit;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+    .phase {
+      background: var(--amber-bg);
+      border: 1px solid #fde68a;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.8rem;
+      color: #92400e;
+      margin-bottom: 14px;
+    }
+    .phase strong { font-family: var(--font-h); }
+    .mini-ingredient {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+    }
+    .mini-ingredient span:last-child {
+      margin-left: auto;
+      font-weight: 700;
+      font-family: var(--font-h);
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .btn {
+      font-family: var(--font-h);
+      font-weight: 700;
+      font-size: 0.85rem;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      width: 100%;
+    }
+    .btn-primary { background: var(--primary); color: #fff; margin-top: 8px; }
+    .btn-ghost {
+      background: var(--surface);
+      color: var(--primary);
+      border: 1px solid #c7d2fe;
+      margin-top: 6px;
+    }
+    .split {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .split div {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px dashed var(--line);
+      background: #fafafa;
+    }
+    .split strong { color: var(--text); display: block; margin-bottom: 4px; font-size: 0.82rem; }
+    .why {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 16px;
+      padding-left: 14px;
+      border-left: 3px solid var(--amber);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="banner">
+      <h1>Proposal C — Hybrid UX</h1>
+      <p>
+        Same screen offers <strong>Quick add</strong> (today’s simple form) and <strong>Build meal</strong>
+        (ingredient lines + totals). Backend can start as composite <em>or</em> grouped logs — you choose when implementing.
+      </p>
+      <span class="tag">UX: two modes · persistence: decide in build phase</span>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="Entry mode">
+      <div class="tab">Quick add</div>
+      <div class="tab active">Build meal</div>
+    </div>
+
+    <section class="card">
+      <h2>Build meal</h2>
+      <div class="phase">
+        <strong>Phase 1 (UI):</strong> user stacks ingredient lines, sees live totals, then taps Save once.
+        <br />
+        <strong>Phase 2 (AI):</strong> same UI — AI prefills ingredient rows; user edits grams.
+      </div>
+
+      <label>Meal name</label>
+      <input type="text" value="Dinner — stir fry" readonly />
+
+      <label>Date</label>
+      <input type="text" value="2026-04-12" readonly />
+
+      <div class="mini-ingredient">
+        <span>Chicken breast</span>
+        <span>150g → 248 kcal</span>
+      </div>
+      <div class="mini-ingredient">
+        <span>White rice, cooked</span>
+        <span>200g → 260 kcal</span>
+      </div>
+
+      <button type="button" class="btn btn-ghost">+ Add from nutrition search</button>
+
+      <div style="margin-top: 14px; font-family: var(--font-h); font-weight: 800; font-size: 0.9rem;">
+        Total · 508 kcal
+      </div>
+
+      <button type="button" class="btn btn-primary">Save meal</button>
+
+      <div class="split">
+        <div>
+          <strong>Save as Proposal A</strong>
+          One document with ingredients[] — best for edit-as-one-meal.
+        </div>
+        <div>
+          <strong>Save as Proposal B</strong>
+          Fan out to multiple FoodLog rows with same meal label — faster to ship if schema is tight.
+        </div>
+      </div>
+    </section>
+
+    <p class="why">
+      <strong>Why this option:</strong> users keep the simple path, power users and AI use the structured path. You can ship UI first, then lock storage.
+    </p>
+  </div>
+</body>
+</html>

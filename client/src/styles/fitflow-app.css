@@ -1290,6 +1290,160 @@ button.ff-confirm-btn.ff-primary {
   font-weight: 800;
 }
 
+.ff-nutrition-search-form {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.ff-nutrition-search-form input {
+  flex: 1 1 16rem;
+  min-width: 12rem;
+  font: inherit;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.ff-nutrition-search-btn {
+  margin-top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ff-nutrition-results {
+  list-style: none;
+  margin: 0.35rem 0 0.6rem;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.ff-nutrition-result-card {
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-md);
+  padding: 0.7rem 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.ff-nutrition-result-title {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-h);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.ff-nutrition-result-macros {
+  margin: 0;
+  color: var(--text-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.ff-nutrition-use-btn {
+  margin-top: 0;
+  min-width: 6.2rem;
+  padding: 8px 13px;
+}
+
+.ff-nutrition-entry-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.ff-meal-builder-link {
+  margin-top: 0;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 14px;
+}
+
+.ff-meal-builder-link:hover {
+  text-decoration: none;
+}
+
+.ff-meal-log-list {
+  list-style: none;
+  margin: 0.55rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.ff-meal-log-card {
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-md);
+  padding: 0.7rem 0.8rem;
+}
+
+.ff-meal-log-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+}
+
+.ff-meal-log-title {
+  margin: 0;
+  font-family: var(--font-h);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.ff-meal-ingredients {
+  display: grid;
+  gap: 0.7rem;
+  margin-bottom: 0.65rem;
+}
+
+.ff-meal-ingredient-card {
+  border: 1px solid var(--border-light);
+  border-radius: var(--r-md);
+  padding: 0.75rem;
+  background: #fcfcfd;
+}
+
+.ff-meal-ingredient-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-bottom: 0.55rem;
+}
+
+.ff-meal-ingredient-top h3 {
+  margin: 0;
+  font-family: var(--font-h);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.ff-meal-grid {
+  margin: 0;
+}
+
+.ff-meal-total-preview {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 0.88rem;
+  color: var(--text-2);
+}
+
 .ff-nutrition-over {
   color: var(--rose);
 }

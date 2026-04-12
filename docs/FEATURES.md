@@ -21,7 +21,7 @@ A **single place** to run your fitness life: **plan and follow workouts**, **log
 | **Audience size** | **Two people** for now (you + one other). No need to design for a large public user base in MVP. |
 | **Desktop vs mobile** | **Both at the same level** for MVP: layouts and usability should be intentionally solid on **desktop and mobile** (responsive web, not native apps). |
 | **Workout data model** | See [Workouts: templates vs sessions](#workouts-templates-vs-sessions-explained). **MVP includes both:** structured **sessions** (on a date) **and** reusable **templates** (saved blueprints; start a session from a template). |
-| **Nutrition (MVP)** | **Manual entry** with calories plus **optional protein/carbs/fat grams**. Entries support **full edit** (date, calories, macros, label, note). **Barcode / external nutrition API** is **explicitly not MVP**; planned **later**. |
+| **Nutrition (MVP)** | **Manual entry** with calories plus **optional protein/carbs/fat grams**. Entries support **full edit** (date, calories, macros, label, note). Includes **nutrition search per 100g** through a hybrid provider strategy (**USDA + Open Food Facts**) with user-editable prefill before save. |
 | **AI coach** | **After MVP** — not required for the first full release. |
 | **Progress** | **In MVP:** **body measurements**, **progress photos**, and **lift PR history** (alongside workouts and calorie story). |
 | **Notifications** | **None** for now (no email or push in MVP). |
@@ -73,9 +73,15 @@ These are two different ideas:
 - **Daily calorie target** (from profile) vs **logged intake**.
 - **Manual** logging: date, calories, optional meal label/note, and optional macro grams (**protein/carbs/fat**).
 - **Edit existing entries** for all fields (date, calories, macros, meal label, note), plus delete.
+- **Nutrition search** via `USDA + Open Food Facts` behind one backend endpoint, returning normalized per-100g values (calories/protein/carbs/fat).
+- **Prefill flow:** selecting a search result pre-fills add-entry form values, then user edits before saving.
+- **Two logging paths:** keep the current quick single-entry form, plus a separate **Log meal (ingredients)** flow.
+- **Meal builder model:** one meal record contains `ingredients[]` with grams + per-100g nutrition, and the server computes rollup totals for the meal.
+- **Provider resilience:** short provider timeout, fallback to partial results when one source fails, and lightweight in-memory cache for repeated searches.
+- **Attribution visible** in Nutrition UI for source transparency.
 - **Totals** computed **server-side** where possible.
 
-**Later (not MVP):** external nutrition API, **barcode scanning**, richer food databases.
+**Later (not MVP):** barcode scanning and richer food database improvements.
 
 ---
 

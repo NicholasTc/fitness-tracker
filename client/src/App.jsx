@@ -4,6 +4,7 @@ import AppShell from "./layout/AppShell.jsx";
 import Calendar from "./pages/Calendar.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Login from "./pages/Login.jsx";
+import MealBuilder from "./pages/MealBuilder.jsx";
 import Nutrition from "./pages/Nutrition.jsx";
 import Profile from "./pages/Profile.jsx";
 import Progress from "./pages/Progress.jsx";
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/nutrition" element={<Nutrition />} />
+        <Route path="/nutrition/meal/new" element={<MealBuilder />} />
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/progress" element={<Progress />} />
         <Route path="/workouts" element={<WorkoutsList />} />

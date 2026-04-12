@@ -9,6 +9,8 @@ import authRouter from "./routes/auth.js";
 import profileRouter from "./routes/profile.js";
 import calendarRouter from "./routes/calendar.js";
 import foodLogsRouter from "./routes/foodLogs.js";
+import mealLogsRouter from "./routes/mealLogs.js";
+import nutritionRouter from "./routes/nutrition.js";
 import workoutTemplatesRouter from "./routes/workoutTemplates.js";
 import measurementsRouter from "./routes/measurements.js";
 import personalRecordsRouter from "./routes/personalRecords.js";
@@ -40,6 +42,8 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRouter);
 app.use("/api/profile", profileRouter);
 app.use("/api/food-logs", foodLogsRouter);
+app.use("/api/meal-logs", mealLogsRouter);
+app.use("/api/nutrition", nutritionRouter);
 app.use("/api/calendar", calendarRouter);
 app.use("/api/measurements", measurementsRouter);
 app.use("/api/personal-records", personalRecordsRouter);

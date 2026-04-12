@@ -1,6 +1,7 @@
 import { Router } from "express";
 import Workout from "../models/Workout.js";
 import FoodLog from "../models/FoodLog.js";
+import MealLog from "../models/MealLog.js";
 import { requireAuth } from "../middleware/auth.js";
 import { parseInclusiveDateRange } from "../utils/dateRange.js";
 import { computeTotalsFromEntries } from "../utils/serializeFoodLog.js";
@@ -53,6 +54,17 @@ router.get("/", async (req, res, next) => {
     }).lean();
 
     const nutritionByDay = computeTotalsFromEntries(foodRows).byDay;
+    const mealRows = await MealLog.find({
+      userId: req.user.id,
+      date: { $gte: startBound, $lte: endBoundInclusive },
+    })
+      .select({ date: 1, totalCalories: 1 })
+      .lean();
+    for (const row of mealRows) {
+      const ymd = new Date(row.date).toISOString().slice(0, 10);
+      const calories = Number.isFinite(row.totalCalories) ? row.totalCalories : 0;
+      nutritionByDay[ymd] = (nutritionByDay[ymd] || 0) + calories;
+    }
 
     res.json({
       start: startYmd,
