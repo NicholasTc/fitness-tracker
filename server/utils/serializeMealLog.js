@@ -56,6 +56,7 @@ export function serializeMealLog(doc) {
     id: raw._id.toString(),
     date: ymd(raw.date),
     mealName: raw.mealName,
+    mealLabel: raw.mealLabel || null,
     note: raw.note || "",
     ingredients,
     totals: {

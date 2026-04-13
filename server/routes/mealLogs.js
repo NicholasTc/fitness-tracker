@@ -14,6 +14,23 @@ const router = Router();
 
 router.use(requireAuth);
 
+const ALLOWED_MEAL_LABELS = new Set(["Breakfast", "Lunch", "Dinner", "Snack"]);
+
+function parseMealLabel(rawValue, res) {
+  if (rawValue == null || rawValue === "") return undefined;
+  if (typeof rawValue !== "string") {
+    res.status(400).json({ error: "mealLabel must be a string" });
+    return null;
+  }
+  const label = rawValue.trim();
+  if (!label) return undefined;
+  if (!ALLOWED_MEAL_LABELS.has(label)) {
+    res.status(400).json({ error: "mealLabel must be one of Breakfast/Lunch/Dinner/Snack" });
+    return null;
+  }
+  return label;
+}
+
 function parseOneIngredient(raw, res) {
   if (!raw || typeof raw !== "object") {
     res.status(400).json({ error: "Each ingredient must be an object" });
@@ -143,6 +160,8 @@ router.post("/", async (req, res, next) => {
       if (!one) return;
       ingredients.push(one);
     }
+    const mealLabel = parseMealLabel(body?.mealLabel, res);
+    if (mealLabel === null) return;
     const totals = computeMealTotals(ingredients);
     const note =
       typeof body?.note === "string" && body.note.trim()
@@ -153,6 +172,7 @@ router.post("/", async (req, res, next) => {
       userId: req.user.id,
       date: normalizedDate,
       mealName,
+      mealLabel,
       note,
       ingredients,
       totalCalories: totals.totalCalories,

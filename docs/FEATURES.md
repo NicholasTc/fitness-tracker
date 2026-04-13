@@ -75,7 +75,7 @@ These are two different ideas:
 - **Edit existing entries** for all fields (date, calories, macros, meal label, note), plus delete.
 - **Nutrition search** via `USDA + Open Food Facts` behind one backend endpoint, returning normalized per-100g values (calories/protein/carbs/fat).
 - **Prefill flow:** selecting a search result pre-fills add-entry form values, then user edits before saving.
-- **Two logging paths:** keep the current quick single-entry form, plus a separate **Log meal (ingredients)** flow.
+- **Unified “Log food” UX:** one logging area with two modes — **Quick log** (simple item) and **Build a meal** (ingredient-based meal with totals).
 - **Meal builder model:** one meal record contains `ingredients[]` with grams + per-100g nutrition, and the server computes rollup totals for the meal.
 - **Provider resilience:** short provider timeout, fallback to partial results when one source fails, and lightweight in-memory cache for repeated searches.
 - **Attribution visible** in Nutrition UI for source transparency.

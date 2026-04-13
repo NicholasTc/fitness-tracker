@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { API_BASE, bearerAuth, jsonAuthHeaders, parseJsonSafe } from "../lib/api.js";
@@ -7,6 +7,11 @@ import {
   IoChevronForwardOutline,
   IoSearchOutline,
 } from "../icons/fitflowIonIcons.js";
+import LogModeToggle from "../components/nutrition/LogModeToggle.jsx";
+import QuickLogForm from "../components/nutrition/QuickLogForm.jsx";
+import MealLogForm from "../components/nutrition/MealLogForm.jsx";
+import TodayLogsList from "../components/nutrition/TodayLogsList.jsx";
+import { normalizeMealTag } from "../components/nutrition/constants.js";
 
 function todayYmd() {
   return new Date().toISOString().slice(0, 10);
@@ -32,21 +37,45 @@ export default function Nutrition() {
   const [mealRangeTotalCalories, setMealRangeTotalCalories] = useState(0);
   const [effectiveTargetCalories, setEffectiveTargetCalories] = useState(null);
 
-  const [calories, setCalories] = useState("");
-  const [proteinG, setProteinG] = useState("");
-  const [carbsG, setCarbsG] = useState("");
-  const [fatG, setFatG] = useState("");
-  const [mealLabel, setMealLabel] = useState("");
-  const [note, setNote] = useState("");
-  const [saving, setSaving] = useState(false);
+  const [logMode, setLogMode] = useState("quick");
+  const [quickForm, setQuickForm] = useState({
+    note: "",
+    calories: "",
+    mealLabel: "",
+    proteinG: "",
+    carbsG: "",
+    fatG: "",
+  });
+  const [savingQuick, setSavingQuick] = useState(false);
+  const [savingMeal, setSavingMeal] = useState(false);
+
+  const [mealForm, setMealForm] = useState({
+    mealName: "",
+    mealLabel: "",
+    note: "",
+    ingredients: [
+      {
+        name: "",
+        grams: "100",
+        caloriesPer100g: "",
+        proteinPer100g: "",
+        carbsPer100g: "",
+        fatPer100g: "",
+        source: "manual",
+        externalId: "",
+      },
+    ],
+  });
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(null);
   const [updating, setUpdating] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchLoading, setSearchLoading] = useState(false);
-  const [searchError, setSearchError] = useState(null);
-  const [searchResults, setSearchResults] = useState([]);
-  const [searchMeta, setSearchMeta] = useState(null);
+  const [mealSearch, setMealSearch] = useState({
+    query: "",
+    loading: false,
+    error: null,
+    results: [],
+    meta: null,
+  });
 
   const load = useCallback(async () => {
     if (!token) return;
@@ -109,12 +138,16 @@ export default function Nutrition() {
     load();
   }, [load]);
 
-  async function handleAdd(e) {
+  function updateQuickForm(field, value) {
+    setQuickForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleQuickAdd(e) {
     e.preventDefault();
-    const c = Number(calories);
+    const c = Number(quickForm.calories);
     if (!token || !Number.isFinite(c) || c < 1) return;
 
-    setSaving(true);
+    setSavingQuick(true);
     setError(null);
     try {
       const res = await fetch(`${API_BASE}/api/food-logs`, {
@@ -123,11 +156,11 @@ export default function Nutrition() {
         body: JSON.stringify({
           date: day,
           calories: c,
-          proteinG: proteinG === "" ? undefined : Number(proteinG),
-          carbsG: carbsG === "" ? undefined : Number(carbsG),
-          fatG: fatG === "" ? undefined : Number(fatG),
-          mealLabel: mealLabel.trim() || undefined,
-          note: note.trim() || undefined,
+          proteinG: quickForm.proteinG === "" ? undefined : Number(quickForm.proteinG),
+          carbsG: quickForm.carbsG === "" ? undefined : Number(quickForm.carbsG),
+          fatG: quickForm.fatG === "" ? undefined : Number(quickForm.fatG),
+          mealLabel: quickForm.mealLabel || undefined,
+          note: quickForm.note.trim() || undefined,
         }),
       });
       const data = await parseJsonSafe(res);
@@ -139,17 +172,19 @@ export default function Nutrition() {
       if (!res.ok) {
         throw new Error(data?.error || res.statusText || `HTTP ${res.status}`);
       }
-      setCalories("");
-      setProteinG("");
-      setCarbsG("");
-      setFatG("");
-      setMealLabel("");
-      setNote("");
+      setQuickForm({
+        note: "",
+        calories: "",
+        mealLabel: "",
+        proteinG: "",
+        carbsG: "",
+        fatG: "",
+      });
       await load();
     } catch (err) {
       setError(err.message || String(err));
     } finally {
-      setSaving(false);
+      setSavingQuick(false);
     }
   }
 
@@ -263,12 +298,52 @@ export default function Nutrition() {
     }
   }
 
-  async function handleSearch(e) {
-    e.preventDefault();
-    const q = searchQuery.trim();
+  function updateMealField(field, value) {
+    setMealForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function updateMealIngredient(idx, field, value) {
+    setMealForm((prev) => ({
+      ...prev,
+      ingredients: prev.ingredients.map((item, i) =>
+        i === idx ? { ...item, [field]: value } : item,
+      ),
+    }));
+  }
+
+  function addMealIngredient() {
+    setMealForm((prev) => ({
+      ...prev,
+      ingredients: [
+        ...prev.ingredients,
+        {
+          name: "",
+          grams: "100",
+          caloriesPer100g: "",
+          proteinPer100g: "",
+          carbsPer100g: "",
+          fatPer100g: "",
+          source: "manual",
+          externalId: "",
+        },
+      ],
+    }));
+  }
+
+  function removeMealIngredient(idx) {
+    setMealForm((prev) => ({
+      ...prev,
+      ingredients:
+        prev.ingredients.length <= 1
+          ? prev.ingredients
+          : prev.ingredients.filter((_, i) => i !== idx),
+    }));
+  }
+
+  async function searchMealIngredient() {
+    const q = mealSearch.query.trim();
     if (!token || q.length < 2) return;
-    setSearchLoading(true);
-    setSearchError(null);
+    setMealSearch((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const qs = new URLSearchParams({ q, limit: "12" });
       const res = await fetch(`${API_BASE}/api/nutrition/search?${qs}`, {
@@ -283,39 +358,208 @@ export default function Nutrition() {
       if (!res.ok) {
         throw new Error(data?.error || res.statusText || `HTTP ${res.status}`);
       }
-      setSearchResults(Array.isArray(data?.results) ? data.results : []);
-      setSearchMeta({
-        partial: Boolean(data?.partial),
-        cached: Boolean(data?.cached),
-      });
+      setMealSearch((prev) => ({
+        ...prev,
+        loading: false,
+        error: null,
+        results: Array.isArray(data?.results) ? data.results : [],
+        meta: {
+          partial: Boolean(data?.partial),
+          cached: Boolean(data?.cached),
+        },
+      }));
     } catch (err) {
-      setSearchResults([]);
-      setSearchMeta(null);
-      setSearchError(err.message || String(err));
-    } finally {
-      setSearchLoading(false);
+      setMealSearch((prev) => ({
+        ...prev,
+        loading: false,
+        error: err.message || String(err),
+        results: [],
+        meta: null,
+      }));
     }
   }
 
-  function handleUseResult(row) {
-    const kcal = row?.per100g?.calories;
-    setCalories(kcal == null ? "" : String(Math.max(1, Math.round(kcal))));
-    setProteinG(
-      row?.per100g?.proteinG == null ? "" : String(Math.round(row.per100g.proteinG)),
-    );
-    setCarbsG(
-      row?.per100g?.carbsG == null ? "" : String(Math.round(row.per100g.carbsG)),
-    );
-    setFatG(row?.per100g?.fatG == null ? "" : String(Math.round(row.per100g.fatG)));
-    const baseLabel = row?.brand ? `${row.name} (${row.brand})` : row?.name || "";
-    setMealLabel(baseLabel.slice(0, 80));
-    setNote(
-      `Per 100g from ${row?.source === "usda" ? "USDA FDC" : "Open Food Facts"}`.slice(
-        0,
-        500,
-      ),
-    );
+  function appendMealIngredientFromSearch(row) {
+    setMealForm((prev) => ({
+      ...prev,
+      ingredients: [
+        ...prev.ingredients,
+        {
+          name: row.name || "",
+          grams: "100",
+          caloriesPer100g:
+            row?.per100g?.calories == null ? "" : String(row.per100g.calories),
+          proteinPer100g:
+            row?.per100g?.proteinG == null ? "" : String(row.per100g.proteinG),
+          carbsPer100g: row?.per100g?.carbsG == null ? "" : String(row.per100g.carbsG),
+          fatPer100g: row?.per100g?.fatG == null ? "" : String(row.per100g.fatG),
+          source: row.source || "manual",
+          externalId: row.externalId || "",
+        },
+      ],
+    }));
   }
+
+  const mealTotals = useMemo(() => {
+    const sum = { calories: 0, proteinG: 0, carbsG: 0, fatG: 0 };
+    for (const one of mealForm.ingredients) {
+      const grams = Number(one.grams);
+      if (!Number.isFinite(grams) || grams <= 0) continue;
+      const factor = grams / 100;
+      const c = Number(one.caloriesPer100g);
+      const p = Number(one.proteinPer100g);
+      const cb = Number(one.carbsPer100g);
+      const f = Number(one.fatPer100g);
+      if (Number.isFinite(c)) sum.calories += c * factor;
+      if (Number.isFinite(p)) sum.proteinG += p * factor;
+      if (Number.isFinite(cb)) sum.carbsG += cb * factor;
+      if (Number.isFinite(f)) sum.fatG += f * factor;
+    }
+    return {
+      calories: Math.round(sum.calories * 10) / 10,
+      proteinG: Math.round(sum.proteinG * 10) / 10,
+      carbsG: Math.round(sum.carbsG * 10) / 10,
+      fatG: Math.round(sum.fatG * 10) / 10,
+    };
+  }, [mealForm.ingredients]);
+
+  async function handleMealSave(e) {
+    e.preventDefault();
+    if (!token) return;
+    const normalizedMealName = mealForm.mealName.trim();
+    if (!normalizedMealName) {
+      setError("Meal name is required");
+      return;
+    }
+    if (!Array.isArray(mealForm.ingredients) || mealForm.ingredients.length < 1) {
+      setError("Add at least one ingredient");
+      return;
+    }
+    const payloadIngredients = [];
+    for (const one of mealForm.ingredients) {
+      const name = one.name.trim();
+      const grams = Number(one.grams);
+      const caloriesPer100g = Number(one.caloriesPer100g);
+      if (!name) {
+        setError("Each ingredient needs a name");
+        return;
+      }
+      if (!Number.isFinite(grams) || grams < 1) {
+        setError("Each ingredient needs grams >= 1");
+        return;
+      }
+      if (!Number.isFinite(caloriesPer100g) || caloriesPer100g < 0) {
+        setError("Each ingredient needs valid calories per 100g");
+        return;
+      }
+      payloadIngredients.push({
+        name,
+        grams,
+        caloriesPer100g,
+        proteinPer100g: one.proteinPer100g === "" ? 0 : Number(one.proteinPer100g),
+        carbsPer100g: one.carbsPer100g === "" ? 0 : Number(one.carbsPer100g),
+        fatPer100g: one.fatPer100g === "" ? 0 : Number(one.fatPer100g),
+        source: one.source || "manual",
+        externalId: one.externalId || undefined,
+      });
+    }
+
+    setSavingMeal(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_BASE}/api/meal-logs`, {
+        method: "POST",
+        headers: jsonAuthHeaders(token),
+        body: JSON.stringify({
+          date: day,
+          mealName: normalizedMealName,
+          mealLabel: mealForm.mealLabel || undefined,
+          note: mealForm.note.trim() || undefined,
+          ingredients: payloadIngredients,
+        }),
+      });
+      const data = await parseJsonSafe(res);
+      if (res.status === 401) {
+        logout();
+        navigate("/login", { replace: true });
+        return;
+      }
+      if (!res.ok) {
+        throw new Error(data?.error || res.statusText || `HTTP ${res.status}`);
+      }
+      setMealForm({
+        mealName: "",
+        mealLabel: "",
+        note: "",
+        ingredients: [
+          {
+            name: "",
+            grams: "100",
+            caloriesPer100g: "",
+            proteinPer100g: "",
+            carbsPer100g: "",
+            fatPer100g: "",
+            source: "manual",
+            externalId: "",
+          },
+        ],
+      });
+      setMealSearch({ query: "", loading: false, error: null, results: [], meta: null });
+      await load();
+    } catch (err) {
+      setError(err.message || String(err));
+    } finally {
+      setSavingMeal(false);
+    }
+  }
+
+  const groupedItems = useMemo(() => {
+    const combined = [
+      ...entries.map((row) => ({
+        key: `quick-${row.id}`,
+        id: row.id,
+        type: "quick",
+        label: normalizeMealTag(row.mealLabel),
+        title: row.note || "Quick log entry",
+        calories: row.calories ?? 0,
+        proteinG: row.proteinG,
+        carbsG: row.carbsG,
+        fatG: row.fatG,
+        createdAt: row.createdAt,
+        raw: row,
+      })),
+      ...mealEntries.map((row) => ({
+        key: `meal-${row.id}`,
+        id: row.id,
+        type: "meal",
+        label: normalizeMealTag(row.mealLabel),
+        title: row.mealName || "Meal",
+        calories: row.totals?.calories ?? 0,
+        proteinG: row.totals?.proteinG ?? null,
+        carbsG: row.totals?.carbsG ?? null,
+        fatG: row.totals?.fatG ?? null,
+        createdAt: row.createdAt,
+        raw: row,
+      })),
+    ];
+
+    const grouped = new Map();
+    for (const item of combined) {
+      if (!grouped.has(item.label)) grouped.set(item.label, []);
+      grouped.get(item.label).push(item);
+    }
+
+    const order = ["Breakfast", "Lunch", "Dinner", "Snack", "Uncategorized"];
+    return order
+      .filter((label) => grouped.has(label))
+      .map((label) => ({
+        label,
+        items: grouped
+          .get(label)
+          .slice()
+          .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)),
+      }));
+  }, [entries, mealEntries]);
 
   const combinedRangeCalories = rangeTotalCalories + mealRangeTotalCalories;
   const remaining =
@@ -406,49 +650,42 @@ export default function Nutrition() {
         </p>
       )}
 
-      <section className="ff-card" aria-labelledby="search-heading">
-        <h2 id="search-heading" className="ff-section-title">
-          Nutrition search (per 100g)
+      <section className="ff-card" aria-labelledby="ingredient-search-heading">
+        <h2 id="ingredient-search-heading" className="ff-section-title">
+          Ingredient search (per 100g)
         </h2>
-        <form className="ff-nutrition-search-form" onSubmit={handleSearch}>
-          <label htmlFor="nutrition-search" className="sr-only">
-            Search food
-          </label>
+        <p className="ff-meta">
+          Search first, then add ingredients while in Build a meal mode.
+        </p>
+        <div className="ff-nutrition-search-form">
           <input
-            id="nutrition-search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search e.g. chicken breast"
+            value={mealSearch.query}
+            onChange={(e) => setMealSearch((prev) => ({ ...prev, query: e.target.value }))}
+            placeholder="Search ingredient e.g. chicken breast"
             minLength={2}
           />
           <button
-            type="submit"
+            type="button"
             className="ff-btn-secondary ff-nutrition-search-btn"
-            disabled={searchLoading || searchQuery.trim().length < 2}
+            disabled={mealSearch.loading || mealSearch.query.trim().length < 2}
+            onClick={searchMealIngredient}
           >
             <IoSearchOutline size={16} aria-hidden />
-            {searchLoading ? "Searching…" : "Search"}
+            {mealSearch.loading ? "Searching…" : "Search"}
           </button>
-        </form>
-        {searchError && (
-          <p className="ff-err" role="alert">
-            {searchError}
-          </p>
-        )}
-        {!searchLoading && searchResults.length === 0 && searchMeta && (
-          <p className="ff-muted">No nutrition results found for this query.</p>
-        )}
-        {searchMeta?.partial && (
+        </div>
+        {mealSearch.error && <p className="ff-err">{mealSearch.error}</p>}
+        {mealSearch.meta?.partial && (
           <p className="ff-meta">
             One provider is temporarily unavailable. Showing partial results.
           </p>
         )}
-        {searchMeta?.cached && (
+        {mealSearch.meta?.cached && (
           <p className="ff-meta">Showing cached results for faster response.</p>
         )}
-        {searchResults.length > 0 && (
+        {mealSearch.results.length > 0 && (
           <ul className="ff-nutrition-results">
-            {searchResults.map((row) => (
+            {mealSearch.results.map((row) => (
               <li
                 key={`${row.source}:${row.externalId || row.name}`}
                 className="ff-nutrition-result-card"
@@ -457,9 +694,6 @@ export default function Nutrition() {
                   <p className="ff-nutrition-result-title">
                     {row.name}
                     {row.brand ? ` (${row.brand})` : ""}
-                  </p>
-                  <p className="ff-meta" style={{ margin: "0.15rem 0 0.35rem" }}>
-                    Source: {row.source === "usda" ? "USDA FDC" : "Open Food Facts"}
                   </p>
                   <p className="ff-nutrition-result-macros">
                     {[
@@ -479,281 +713,66 @@ export default function Nutrition() {
                 <button
                   type="button"
                   className="ff-btn-primary ff-nutrition-use-btn"
-                  onClick={() => handleUseResult(row)}
+                  onClick={() => {
+                    appendMealIngredientFromSearch(row);
+                    setLogMode("meal");
+                  }}
                 >
-                  Use this
+                  Add to meal
                 </button>
               </li>
             ))}
           </ul>
+        )}
+      </section>
+
+      <section className="ff-card" aria-labelledby="log-food-heading">
+        <h2 id="log-food-heading" className="ff-section-title">
+          Log food
+        </h2>
+        <LogModeToggle mode={logMode} onChange={setLogMode} />
+        {logMode === "quick" ? (
+          <QuickLogForm
+            values={quickForm}
+            onChange={updateQuickForm}
+            onSubmit={handleQuickAdd}
+            saving={savingQuick}
+            helperText="Best for simple items or rough estimates."
+          />
+        ) : (
+          <MealLogForm
+            meal={mealForm}
+            setMealField={updateMealField}
+            totals={mealTotals}
+            onIngredientChange={updateMealIngredient}
+            addIngredient={addMealIngredient}
+            removeIngredient={removeMealIngredient}
+            onSubmit={handleMealSave}
+            saving={savingMeal}
+            helperText="Best for meals with multiple ingredients and automatic totals."
+          />
         )}
         <p className="ff-meta">
           Data sources: USDA FoodData Central and Open Food Facts.
         </p>
       </section>
 
-      <section className="ff-card" aria-labelledby="meal-entry-heading">
-        <div className="ff-nutrition-entry-actions">
-          <h2 id="meal-entry-heading" className="ff-section-title">
-            Meal builder
-          </h2>
-          <Link to="/nutrition/meal/new" className="ff-btn-primary ff-meal-builder-link">
-            Log meal (ingredients)
-          </Link>
-        </div>
-        <p className="ff-meta">
-          Use this for multi-ingredient meals. Totals roll up into your day summary.
-        </p>
-      </section>
-
-      <section className="ff-card" aria-labelledby="add-heading">
-        <h2 id="add-heading" className="ff-section-title">
-          Add entry
-        </h2>
-        <form onSubmit={handleAdd}>
-          <div className="ff-form-grid">
-            <label htmlFor="cal">Calories</label>
-            <input
-              id="cal"
-              type="number"
-              min={1}
-              max={50000}
-              step={1}
-              value={calories}
-              onChange={(e) => setCalories(e.target.value)}
-              required
-              placeholder="e.g. 350"
-            />
-            <label htmlFor="meal">Meal (optional)</label>
-            <input
-              id="meal"
-              value={mealLabel}
-              onChange={(e) => setMealLabel(e.target.value)}
-              maxLength={80}
-              placeholder="Breakfast, snack…"
-            />
-            <label htmlFor="note">Note (optional)</label>
-            <input
-              id="note"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              maxLength={500}
-              placeholder="What you ate"
-            />
-            <label htmlFor="proteinG">Protein g (optional)</label>
-            <input
-              id="proteinG"
-              type="number"
-              min={0}
-              max={1000}
-              step={1}
-              value={proteinG}
-              onChange={(e) => setProteinG(e.target.value)}
-              placeholder="e.g. 35"
-            />
-            <label htmlFor="carbsG">Carbs g (optional)</label>
-            <input
-              id="carbsG"
-              type="number"
-              min={0}
-              max={1000}
-              step={1}
-              value={carbsG}
-              onChange={(e) => setCarbsG(e.target.value)}
-              placeholder="e.g. 42"
-            />
-            <label htmlFor="fatG">Fat g (optional)</label>
-            <input
-              id="fatG"
-              type="number"
-              min={0}
-              max={1000}
-              step={1}
-              value={fatG}
-              onChange={(e) => setFatG(e.target.value)}
-              placeholder="e.g. 12"
-            />
-          </div>
-          <button type="submit" className="ff-btn-primary" disabled={saving}>
-            {saving ? "Adding…" : "Add"}
-          </button>
-        </form>
-      </section>
-
-      <section className="ff-card" aria-labelledby="list-heading">
-        <h2 id="list-heading" className="ff-section-title">
-          Logged for this day
-        </h2>
-        {!loading && entries.length === 0 && (
-          <p className="ff-muted">No entries yet. Add calories above.</p>
-        )}
-        {!loading && entries.length > 0 && (
-          <ul className="ff-food-log-list">
-            {entries.map((row) => (
-              <li key={row.id}>
-                {editingId === row.id && editForm ? (
-                  <div className="ff-form-grid ff-food-edit-grid">
-                    <label>Date</label>
-                    <input
-                      type="date"
-                      value={editForm.date}
-                      onChange={(e) =>
-                        setEditForm((f) => ({ ...f, date: e.target.value }))
-                      }
-                    />
-                    <label>Calories</label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={50000}
-                      step={1}
-                      value={editForm.calories}
-                      onChange={(e) =>
-                        setEditForm((f) => ({ ...f, calories: e.target.value }))
-                      }
-                    />
-                    <label>Protein g</label>
-                    <input
-                      type="number"
-                      min={0}
-                      max={1000}
-                      step={1}
-                      value={editForm.proteinG}
-                      onChange={(e) =>
-                        setEditForm((f) => ({ ...f, proteinG: e.target.value }))
-                      }
-                    />
-                    <label>Carbs g</label>
-                    <input
-                      type="number"
-                      min={0}
-                      max={1000}
-                      step={1}
-                      value={editForm.carbsG}
-                      onChange={(e) =>
-                        setEditForm((f) => ({ ...f, carbsG: e.target.value }))
-                      }
-                    />
-                    <label>Fat g</label>
-                    <input
-                      type="number"
-                      min={0}
-                      max={1000}
-                      step={1}
-                      value={editForm.fatG}
-                      onChange={(e) =>
-                        setEditForm((f) => ({ ...f, fatG: e.target.value }))
-                      }
-                    />
-                    <label>Meal</label>
-                    <input
-                      value={editForm.mealLabel}
-                      onChange={(e) =>
-                        setEditForm((f) => ({ ...f, mealLabel: e.target.value }))
-                      }
-                    />
-                    <label>Note</label>
-                    <input
-                      value={editForm.note}
-                      onChange={(e) =>
-                        setEditForm((f) => ({ ...f, note: e.target.value }))
-                      }
-                    />
-                    <div />
-                    <div style={{ display: "flex", gap: "0.65rem", flexWrap: "wrap" }}>
-                      <button
-                        type="button"
-                        className="ff-btn-primary"
-                        disabled={updating}
-                        onClick={saveEdit}
-                      >
-                        {updating ? "Saving…" : "Save"}
-                      </button>
-                      <button
-                        type="button"
-                        className="ff-btn-secondary"
-                        onClick={cancelEdit}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="ff-food-log-row">
-                    <span className="ff-food-log-cals">{row.calories} kcal</span>
-                    <span className="ff-meta" style={{ flex: "1 1 12rem", margin: 0 }}>
-                      {[row.mealLabel, row.note].filter(Boolean).join(" · ") || "—"}
-                    </span>
-                    <span className="ff-meta" style={{ margin: 0 }}>
-                      {[
-                        row.proteinG != null ? `P ${row.proteinG}g` : null,
-                        row.carbsG != null ? `C ${row.carbsG}g` : null,
-                        row.fatG != null ? `F ${row.fatG}g` : null,
-                      ]
-                        .filter(Boolean)
-                        .join(" · ") || "Macros —"}
-                    </span>
-                    <button
-                      type="button"
-                      className="ff-linkish"
-                      onClick={() => beginEdit(row)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      className="ff-linkish"
-                      onClick={() => handleDelete(row.id)}
-                    >
-                      Remove
-                    </button>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section className="ff-card" aria-labelledby="meal-list-heading">
-        <h2 id="meal-list-heading" className="ff-section-title">
-          Meals logged for this day
-        </h2>
-        {!loading && mealEntries.length === 0 && (
-          <p className="ff-muted">No meal-builder entries yet.</p>
-        )}
-        {!loading && mealEntries.length > 0 && (
-          <ul className="ff-meal-log-list">
-            {mealEntries.map((meal) => (
-              <li key={meal.id} className="ff-meal-log-card">
-                <div className="ff-meal-log-head">
-                  <p className="ff-meal-log-title">{meal.mealName}</p>
-                  <button
-                    type="button"
-                    className="ff-linkish"
-                    onClick={() => handleDeleteMeal(meal.id)}
-                  >
-                    Remove
-                  </button>
-                </div>
-                <p className="ff-meta" style={{ marginTop: 0 }}>
-                  {meal.totals?.calories ?? 0} kcal · P {meal.totals?.proteinG ?? 0}g · C{" "}
-                  {meal.totals?.carbsG ?? 0}g · F {meal.totals?.fatG ?? 0}g
-                </p>
-                <p className="ff-meta">
-                  {Array.isArray(meal.ingredients) ? meal.ingredients.length : 0} ingredient
-                  {Array.isArray(meal.ingredients) && meal.ingredients.length === 1
-                    ? ""
-                    : "s"}
-                </p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      <TodayLogsList
+        loading={loading}
+        groupedItems={groupedItems}
+        editingId={editingId}
+        editForm={editForm}
+        updating={updating}
+        setEditForm={setEditForm}
+        beginEdit={beginEdit}
+        cancelEdit={cancelEdit}
+        saveEdit={saveEdit}
+        onDeleteQuick={handleDelete}
+        onDeleteMeal={handleDeleteMeal}
+      />
 
       <p className="ff-meta">
-        Totals are computed on the server from your saved entries.
+        Totals are computed on the server from your saved logs.
       </p>
     </div>
   );

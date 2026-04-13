@@ -29,6 +29,7 @@ const mealLogSchema = new mongoose.Schema(
     /** Calendar day (UTC midnight for the logged day). */
     date: { type: Date, required: true, index: true },
     mealName: { type: String, required: true, trim: true, maxlength: 120 },
+    mealLabel: { type: String, trim: true, maxlength: 30 },
     note: { type: String, trim: true, maxlength: 500 },
     ingredients: {
       type: [ingredientSchema],

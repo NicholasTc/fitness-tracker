@@ -1444,6 +1444,87 @@ button.ff-confirm-btn.ff-primary {
   color: var(--text-2);
 }
 
+.ff-log-mode-toggle {
+  display: inline-flex;
+  width: 100%;
+  max-width: 440px;
+  background: #f8fafc;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 4px;
+  margin-top: 0.2rem;
+  margin-bottom: 0.8rem;
+}
+
+.ff-log-mode-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  border-radius: 9px;
+  min-height: 38px;
+  font-family: var(--font-h);
+  font-size: 0.83rem;
+  font-weight: 700;
+}
+
+.ff-log-mode-btn.is-active {
+  background: var(--surface);
+  color: var(--primary);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+}
+
+.ff-subsection-title {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-h);
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.ff-meal-search-block {
+  border-top: 1px solid var(--border-light);
+  margin-top: 0.45rem;
+  padding-top: 0.75rem;
+}
+
+.ff-log-group {
+  margin-top: 0.75rem;
+}
+
+.ff-log-group-title {
+  margin: 0;
+  font-family: var(--font-h);
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-2);
+}
+
+.ff-log-type-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.1rem;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.ff-log-type-badge.quick {
+  background: #eef2ff;
+  color: #3949cf;
+}
+
+.ff-log-type-badge.meal {
+  background: #ecfdf5;
+  color: #0f8f63;
+}
+
+.ff-today-log-row {
+  align-items: center;
+}
+
 .ff-nutrition-over {
   color: var(--rose);
 }
