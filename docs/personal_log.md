@@ -9,3 +9,6 @@ To do April 2 (goals):
 3) (finish or not finish but I must do this) update my portfoliio to include fitflow, also i think i should remove the animation seems tacky and probably most people can do this too with AI
 
 Another issue: when searching for ingredient, there seems to be too many output. Proposal: average it out 
+
+Proposal: instead of displaying exact calorie count, display a range
+

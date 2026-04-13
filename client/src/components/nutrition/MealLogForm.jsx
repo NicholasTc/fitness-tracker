@@ -72,18 +72,18 @@ export default function MealLogForm({
                 value={ing.grams}
                 onChange={(e) => onIngredientChange(idx, "grams", e.target.value)}
               />
-              <label>Calories / 100g</label>
+              <label>Calories</label>
               <input
                 type="number"
                 min={0}
-                max={5000}
+                max={50000}
                 step={0.1}
                 value={ing.caloriesPer100g}
                 onChange={(e) =>
                   onIngredientChange(idx, "caloriesPer100g", e.target.value)
                 }
               />
-              <label>Protein / 100g</label>
+              <label>Protein g</label>
               <input
                 type="number"
                 min={0}
@@ -92,7 +92,7 @@ export default function MealLogForm({
                 value={ing.proteinPer100g}
                 onChange={(e) => onIngredientChange(idx, "proteinPer100g", e.target.value)}
               />
-              <label>Carbs / 100g</label>
+              <label>Carbs g</label>
               <input
                 type="number"
                 min={0}
@@ -101,7 +101,7 @@ export default function MealLogForm({
                 value={ing.carbsPer100g}
                 onChange={(e) => onIngredientChange(idx, "carbsPer100g", e.target.value)}
               />
-              <label>Fat / 100g</label>
+              <label>Fat g</label>
               <input
                 type="number"
                 min={0}

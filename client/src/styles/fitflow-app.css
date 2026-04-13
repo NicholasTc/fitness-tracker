@@ -1525,6 +1525,57 @@ button.ff-confirm-btn.ff-primary {
   align-items: center;
 }
 
+.ff-ai-helper-card {
+  border-color: #dfe3ff;
+  background: linear-gradient(180deg, #f7f8ff 0%, #ffffff 42%);
+}
+
+.ff-ai-helper-row {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.ff-ai-helper-row input {
+  flex: 1 1 18rem;
+  min-width: 12rem;
+  font: inherit;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.ff-ai-helper-row .ff-btn-primary {
+  margin-top: 0;
+}
+
+.ff-ai-draft-preview {
+  margin-top: 0.7rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid #e4e7ff;
+}
+
+.ff-ai-draft-list {
+  margin: 0.35rem 0 0.55rem;
+  padding-left: 1rem;
+  color: var(--text-2);
+  font-size: 0.84rem;
+}
+
+.ff-ai-draft-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ff-ai-draft-actions .ff-btn-secondary,
+.ff-ai-draft-actions .ff-btn-primary {
+  margin-top: 0;
+}
+
 .ff-nutrition-over {
   color: var(--rose);
 }

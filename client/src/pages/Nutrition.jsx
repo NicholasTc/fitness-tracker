@@ -76,6 +76,11 @@ export default function Nutrition() {
     results: [],
     meta: null,
   });
+  const [aiMealText, setAiMealText] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
+  const [aiDraft, setAiDraft] = useState(null);
+  const [aiParserMode, setAiParserMode] = useState("gemini");
 
   const load = useCallback(async () => {
     if (!token) return;
@@ -303,12 +308,41 @@ export default function Nutrition() {
   }
 
   function updateMealIngredient(idx, field, value) {
-    setMealForm((prev) => ({
-      ...prev,
-      ingredients: prev.ingredients.map((item, i) =>
-        i === idx ? { ...item, [field]: value } : item,
-      ),
-    }));
+    setMealForm((prev) => {
+      const ingredients = prev.ingredients.map((item, i) => {
+        if (i !== idx) return item;
+        if (field !== "grams") {
+          return { ...item, [field]: value };
+        }
+        const prevGrams = Number(item.grams);
+        const nextGrams = Number(value);
+        if (!Number.isFinite(prevGrams) || prevGrams <= 0 || !Number.isFinite(nextGrams)) {
+          return { ...item, grams: value };
+        }
+        const ratio = nextGrams / prevGrams;
+        return {
+          ...item,
+          grams: value,
+          caloriesPer100g:
+            item.caloriesPer100g === ""
+              ? ""
+              : String(Math.round(Number(item.caloriesPer100g) * ratio * 10) / 10),
+          proteinPer100g:
+            item.proteinPer100g === ""
+              ? ""
+              : String(Math.round(Number(item.proteinPer100g) * ratio * 10) / 10),
+          carbsPer100g:
+            item.carbsPer100g === ""
+              ? ""
+              : String(Math.round(Number(item.carbsPer100g) * ratio * 10) / 10),
+          fatPer100g:
+            item.fatPer100g === ""
+              ? ""
+              : String(Math.round(Number(item.fatPer100g) * ratio * 10) / 10),
+        };
+      });
+      return { ...prev, ingredients };
+    });
   }
 
   function addMealIngredient() {
@@ -400,20 +434,78 @@ export default function Nutrition() {
     }));
   }
 
+  async function handleGenerateAiDraft() {
+    const text = aiMealText.trim();
+    if (!token || text.length < 6) return;
+    setAiLoading(true);
+    setAiError(null);
+    try {
+      const res = await fetch(`${API_BASE}/api/ai/meal-breakdown/draft`, {
+        method: "POST",
+        headers: jsonAuthHeaders(token),
+        body: JSON.stringify({ text, date: day }),
+      });
+      const data = await parseJsonSafe(res);
+      if (res.status === 401) {
+        logout();
+        navigate("/login", { replace: true });
+        return;
+      }
+      if (!res.ok) {
+        throw new Error(data?.error || res.statusText || `HTTP ${res.status}`);
+      }
+      setAiDraft(data?.draft || null);
+      setAiParserMode(data?.parserMode || "gemini");
+    } catch (err) {
+      setAiDraft(null);
+      setAiParserMode("gemini");
+      setAiError(err.message || String(err));
+    } finally {
+      setAiLoading(false);
+    }
+  }
+
+  function applyAiDraftToBuilder() {
+    if (!aiDraft) return;
+    setMealForm({
+      mealName: aiDraft.mealName || "",
+      mealLabel: aiDraft.mealLabel || "",
+      note: "",
+      ingredients: Array.isArray(aiDraft.ingredients) && aiDraft.ingredients.length > 0
+        ? aiDraft.ingredients.map((i) => ({
+            grams: String(i.grams ?? 100),
+            name: i.name || "",
+            caloriesPer100g: String(
+              Math.round(((i.caloriesPer100g ?? 0) * (i.grams ?? 100) / 100) * 10) / 10,
+            ),
+            proteinPer100g: String(
+              Math.round(((i.proteinPer100g ?? 0) * (i.grams ?? 100) / 100) * 10) / 10,
+            ),
+            carbsPer100g: String(
+              Math.round(((i.carbsPer100g ?? 0) * (i.grams ?? 100) / 100) * 10) / 10,
+            ),
+            fatPer100g: String(
+              Math.round(((i.fatPer100g ?? 0) * (i.grams ?? 100) / 100) * 10) / 10,
+            ),
+            source: i.source || "manual",
+            externalId: i.externalId || "",
+          }))
+        : mealForm.ingredients,
+    });
+    setLogMode("meal");
+  }
+
   const mealTotals = useMemo(() => {
     const sum = { calories: 0, proteinG: 0, carbsG: 0, fatG: 0 };
     for (const one of mealForm.ingredients) {
-      const grams = Number(one.grams);
-      if (!Number.isFinite(grams) || grams <= 0) continue;
-      const factor = grams / 100;
       const c = Number(one.caloriesPer100g);
       const p = Number(one.proteinPer100g);
       const cb = Number(one.carbsPer100g);
       const f = Number(one.fatPer100g);
-      if (Number.isFinite(c)) sum.calories += c * factor;
-      if (Number.isFinite(p)) sum.proteinG += p * factor;
-      if (Number.isFinite(cb)) sum.carbsG += cb * factor;
-      if (Number.isFinite(f)) sum.fatG += f * factor;
+      if (Number.isFinite(c)) sum.calories += c;
+      if (Number.isFinite(p)) sum.proteinG += p;
+      if (Number.isFinite(cb)) sum.carbsG += cb;
+      if (Number.isFinite(f)) sum.fatG += f;
     }
     return {
       calories: Math.round(sum.calories * 10) / 10,
@@ -439,7 +531,10 @@ export default function Nutrition() {
     for (const one of mealForm.ingredients) {
       const name = one.name.trim();
       const grams = Number(one.grams);
-      const caloriesPer100g = Number(one.caloriesPer100g);
+      const caloriesTotal = Number(one.caloriesPer100g);
+      const proteinTotal = one.proteinPer100g === "" ? 0 : Number(one.proteinPer100g);
+      const carbsTotal = one.carbsPer100g === "" ? 0 : Number(one.carbsPer100g);
+      const fatTotal = one.fatPer100g === "" ? 0 : Number(one.fatPer100g);
       if (!name) {
         setError("Each ingredient needs a name");
         return;
@@ -448,17 +543,29 @@ export default function Nutrition() {
         setError("Each ingredient needs grams >= 1");
         return;
       }
-      if (!Number.isFinite(caloriesPer100g) || caloriesPer100g < 0) {
-        setError("Each ingredient needs valid calories per 100g");
+      if (!Number.isFinite(caloriesTotal) || caloriesTotal < 0) {
+        setError("Each ingredient needs valid calories");
+        return;
+      }
+      if (!Number.isFinite(proteinTotal) || proteinTotal < 0) {
+        setError("Each ingredient needs valid protein grams");
+        return;
+      }
+      if (!Number.isFinite(carbsTotal) || carbsTotal < 0) {
+        setError("Each ingredient needs valid carbs grams");
+        return;
+      }
+      if (!Number.isFinite(fatTotal) || fatTotal < 0) {
+        setError("Each ingredient needs valid fat grams");
         return;
       }
       payloadIngredients.push({
         name,
         grams,
-        caloriesPer100g,
-        proteinPer100g: one.proteinPer100g === "" ? 0 : Number(one.proteinPer100g),
-        carbsPer100g: one.carbsPer100g === "" ? 0 : Number(one.carbsPer100g),
-        fatPer100g: one.fatPer100g === "" ? 0 : Number(one.fatPer100g),
+        caloriesPer100g: Math.round((caloriesTotal * 100) / grams * 10) / 10,
+        proteinPer100g: Math.round((proteinTotal * 100) / grams * 10) / 10,
+        carbsPer100g: Math.round((carbsTotal * 100) / grams * 10) / 10,
+        fatPer100g: Math.round((fatTotal * 100) / grams * 10) / 10,
         source: one.source || "manual",
         externalId: one.externalId || undefined,
       });
@@ -649,6 +756,72 @@ export default function Nutrition() {
           {error}
         </p>
       )}
+
+      <section className="ff-card ff-ai-helper-card" aria-labelledby="ai-helper-heading">
+        <h2 id="ai-helper-heading" className="ff-section-title">
+          Need help breaking down a meal?
+        </h2>
+        <p className="ff-meta">
+          Describe your meal and AI drafts ingredients for review. Nothing is saved
+          until you confirm and press Save.
+        </p>
+        <div className="ff-ai-helper-row">
+          <input
+            value={aiMealText}
+            onChange={(e) => setAiMealText(e.target.value)}
+            placeholder="e.g. chicken rice with fried egg"
+            maxLength={300}
+          />
+          <button
+            type="button"
+            className="ff-btn-primary"
+            disabled={aiLoading || aiMealText.trim().length < 6}
+            onClick={handleGenerateAiDraft}
+          >
+            {aiLoading ? "Analyzing meal…" : "Use AI meal helper"}
+          </button>
+        </div>
+        {aiError && <p className="ff-err">{aiError}</p>}
+        {aiDraft && (
+          <div className="ff-ai-draft-preview">
+            <p className="ff-meta">
+              Draft: <strong>{aiDraft.mealName || "Meal draft"}</strong>
+              {aiDraft.mealLabel ? ` · ${aiDraft.mealLabel}` : ""}
+            </p>
+            <ul className="ff-ai-draft-list">
+              {aiDraft.ingredients?.map((ing, idx) => (
+                <li key={`${ing.name}-${idx}`}>
+                  <strong>{ing.name}</strong> · {ing.grams}g ·{" "}
+                  {Math.round(((ing.caloriesPer100g ?? 0) * (ing.grams ?? 100)) / 10) / 10} kcal
+                  {ing.unresolved ? " · needs review" : ""}
+                </li>
+              ))}
+            </ul>
+            <p className="ff-meta">
+              Est. total: {aiDraft.totals?.calories ?? 0} kcal · P{" "}
+              {aiDraft.totals?.proteinG ?? 0}g · C {aiDraft.totals?.carbsG ?? 0}g · F{" "}
+              {aiDraft.totals?.fatG ?? 0}g
+            </p>
+            <p className="ff-meta">
+              Review required: confirm once to prefill Build a meal, then edit as needed.
+            </p>
+            {aiParserMode === "mock_fallback" && (
+              <p className="ff-meta">
+                AI parser is in fallback mode right now (provider quota/availability).
+                Review and adjust ingredient names/grams carefully.
+              </p>
+            )}
+            <div className="ff-ai-draft-actions">
+              <button type="button" className="ff-btn-secondary" onClick={handleGenerateAiDraft}>
+                Regenerate
+              </button>
+              <button type="button" className="ff-btn-primary" onClick={applyAiDraftToBuilder}>
+                Confirm draft and continue
+              </button>
+            </div>
+          </div>
+        )}
+      </section>
 
       <section className="ff-card" aria-labelledby="ingredient-search-heading">
         <h2 id="ingredient-search-heading" className="ff-section-title">

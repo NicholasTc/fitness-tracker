@@ -80,6 +80,7 @@ These are two different ideas:
 - **Provider resilience:** short provider timeout, fallback to partial results when one source fails, and lightweight in-memory cache for repeated searches.
 - **Attribution visible** in Nutrition UI for source transparency.
 - **Totals** computed **server-side** where possible.
+- **AI meal helper (draft flow):** user can describe a meal and receive an ingredient draft prefilled into Build a meal. Draft is **review-first** (never auto-saved).
 
 **Later (not MVP):** barcode scanning and richer food database improvements.
 
@@ -103,6 +104,7 @@ These are two different ideas:
 ### 7. AI coach (post-MVP)
 
 - **Ask questions** and get guidance using **server-only** API keys.
+- **Meal breakdown helper flow:** AI parses meal text into ingredient draft, then nutrition values are validated against nutrition providers before user review/confirm.
 - **Not part of the first full release** per current plan; add after core product is stable.
 
 ---
