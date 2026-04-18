@@ -1,0 +1,52 @@
+name: Render Keepalive
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    env:
+      RENDER_HEALTHCHECK_URL: ${{ secrets.RENDER_HEALTHCHECK_URL }}
+      PING_TZ: ${{ vars.PING_TZ || 'UTC' }}
+      PING_START_HOUR: ${{ vars.PING_START_HOUR || '9' }}
+      PING_END_HOUR: ${{ vars.PING_END_HOUR || '21' }}
+    steps:
+      - name: Validate configuration
+        shell: bash
+        run: |
+          if [ -z "${RENDER_HEALTHCHECK_URL:-}" ]; then
+            echo "Missing secret RENDER_HEALTHCHECK_URL."
+            echo "Set it to your health endpoint, e.g. https://your-app.onrender.com/api/health"
+            exit 1
+          fi
+          if ! [[ "$PING_START_HOUR" =~ ^[0-9]{1,2}$ ]] || ! [[ "$PING_END_HOUR" =~ ^[0-9]{1,2}$ ]]; then
+            echo "PING_START_HOUR and PING_END_HOUR must be integers from 0 to 23."
+            exit 1
+          fi
+          if [ "$PING_START_HOUR" -lt 0 ] || [ "$PING_START_HOUR" -gt 23 ] || [ "$PING_END_HOUR" -lt 0 ] || [ "$PING_END_HOUR" -gt 23 ]; then
+            echo "PING_START_HOUR and PING_END_HOUR must be between 0 and 23."
+            exit 1
+          fi
+
+      - name: Ping only inside active window
+        shell: bash
+        run: |
+          current_hour=$(TZ="$PING_TZ" date +%H)
+          current_hour=$((10#$current_hour))
+          start_hour=$((10#$PING_START_HOUR))
+          end_hour=$((10#$PING_END_HOUR))
+
+          echo "Now in $PING_TZ: hour=$current_hour; active window=$start_hour:00-$end_hour:00"
+
+          # Window is [start_hour, end_hour), e.g. 9 -> 21 means 9:00 to 20:59.
+          if [ "$current_hour" -lt "$start_hour" ] || [ "$current_hour" -ge "$end_hour" ]; then
+            echo "Outside active window. Skipping ping."
+            exit 0
+          fi
+
+          echo "Pinging $RENDER_HEALTHCHECK_URL"
+          curl --fail --silent --show-error --max-time 25 "$RENDER_HEALTHCHECK_URL" > /dev/null
+          echo "Ping success."

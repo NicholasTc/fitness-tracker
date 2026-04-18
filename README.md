@@ -47,3 +47,19 @@ Open the URL Vite prints (usually [http://localhost:5173](http://localhost:5173)
 **Server env:** copy `server/.env.example` to `server/.env`. Set **`MONGODB_URI`** (required). Optionally override `PORT` or `CLIENT_ORIGIN` (CORS); defaults match the URLs above.
 
 **If you see `EADDRINUSE` on the server:** another program is using that port. Set a different `PORT` in `server/.env` and the same base URL in `client/.env` as `VITE_API_URL`.
+
+## Optional: Render keepalive (free-tier friendly)
+
+This repo includes `.github/workflows/render-keepalive.yml`, which pings your Render health endpoint every 10 minutes, but only within a configurable daily time window (default: `09:00-21:00` in UTC).
+
+Set these in GitHub repo settings before enabling:
+
+- **Secret:** `RENDER_HEALTHCHECK_URL` (example: `https://your-app.onrender.com/api/health`)
+- **Variable (optional):** `PING_TZ` (example: `Asia/Kuala_Lumpur`)
+- **Variable (optional):** `PING_START_HOUR` (0-23, default `9`)
+- **Variable (optional):** `PING_END_HOUR` (0-23, default `21`)
+
+Notes:
+
+- The time window is start-inclusive and end-exclusive. (`9` to `21` means 9:00 to 20:59).
+- This reduces cold starts during active hours, while avoiding 24/7 uptime on free tier.
