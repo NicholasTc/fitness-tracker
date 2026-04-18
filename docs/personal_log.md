@@ -12,3 +12,7 @@ Another issue: when searching for ingredient, there seems to be too many output.
 
 Proposal: instead of displaying exact calorie count, display a range
 
+Another thing to do (user related convenience):
+1) Remember me feature + authentication (database should only support 2 user without authentication, if there is more than 2 user, then database should authenticate it)
+2) Revise the UI, to make it more interesting and usable (make the logging feature more usable)
+

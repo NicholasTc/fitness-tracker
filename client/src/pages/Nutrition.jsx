@@ -669,6 +669,30 @@ export default function Nutrition() {
   }, [entries, mealEntries]);
 
   const combinedRangeCalories = rangeTotalCalories + mealRangeTotalCalories;
+  const combinedMacroTotals = useMemo(() => {
+    const totals = { proteinG: 0, carbsG: 0, fatG: 0 };
+    for (const row of entries) {
+      const protein = Number(row?.proteinG);
+      const carbs = Number(row?.carbsG);
+      const fat = Number(row?.fatG);
+      if (Number.isFinite(protein)) totals.proteinG += protein;
+      if (Number.isFinite(carbs)) totals.carbsG += carbs;
+      if (Number.isFinite(fat)) totals.fatG += fat;
+    }
+    for (const row of mealEntries) {
+      const protein = Number(row?.totals?.proteinG);
+      const carbs = Number(row?.totals?.carbsG);
+      const fat = Number(row?.totals?.fatG);
+      if (Number.isFinite(protein)) totals.proteinG += protein;
+      if (Number.isFinite(carbs)) totals.carbsG += carbs;
+      if (Number.isFinite(fat)) totals.fatG += fat;
+    }
+    return {
+      proteinG: Math.round(totals.proteinG * 10) / 10,
+      carbsG: Math.round(totals.carbsG * 10) / 10,
+      fatG: Math.round(totals.fatG * 10) / 10,
+    };
+  }, [entries, mealEntries]);
   const remaining =
     effectiveTargetCalories != null
       ? effectiveTargetCalories - combinedRangeCalories
@@ -723,6 +747,11 @@ export default function Nutrition() {
             <p className="ff-meta">
               Quick entries: <strong>{rangeTotalCalories}</strong> kcal · Meals:{" "}
               <strong>{mealRangeTotalCalories}</strong> kcal
+            </p>
+            <p className="ff-meta">
+              Macros: <strong>P {combinedMacroTotals.proteinG}g</strong> ·{" "}
+              <strong>C {combinedMacroTotals.carbsG}g</strong> ·{" "}
+              <strong>F {combinedMacroTotals.fatG}g</strong>
             </p>
             {effectiveTargetCalories != null ? (
               <p className="ff-meta">

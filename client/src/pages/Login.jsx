@@ -63,13 +63,22 @@ export default function Login() {
   async function handleSignup(e) {
     e.preventDefault();
     setSignupError(null);
+    const normalizedEmail = signupEmail.trim();
+    if (!normalizedEmail) {
+      setSignupError("Email is required");
+      return;
+    }
+    if (signupPassword.length < 8) {
+      setSignupError("Password must be at least 8 characters");
+      return;
+    }
     setSignupSubmitting(true);
     try {
       localStorage.setItem(
         AVATAR_STORAGE_KEY,
         String(Math.min(avatarIdx, AVATAR_ICON_LIST.length - 1)),
       );
-      await register(signupEmail, signupPassword, {
+      await register(normalizedEmail, signupPassword, {
         firstName: signupFirst,
         lastName: signupLast,
       });
@@ -323,8 +332,10 @@ export default function Login() {
               type="submit"
               className="btn btn-primary"
               disabled={signupSubmitting}
+              aria-busy={signupSubmitting}
             >
-              {signupSubmitting ? "Creating…" : "Create Account"}
+              {signupSubmitting && <span className="ff-btn-spinner" aria-hidden />}
+              {signupSubmitting ? "Creating account…" : "Create Account"}
             </button>
           </form>
 
