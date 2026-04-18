@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { API_BASE, bearerAuth, jsonAuthHeaders, parseJsonSafe } from "../lib/api.js";
+import { addDaysLocalYmd, toLocalYmd } from "../lib/date.js";
 import {
   IoChevronBackOutline,
   IoChevronForwardOutline,
@@ -13,21 +14,11 @@ import MealLogForm from "../components/nutrition/MealLogForm.jsx";
 import TodayLogsList from "../components/nutrition/TodayLogsList.jsx";
 import { normalizeMealTag } from "../components/nutrition/constants.js";
 
-function todayYmd() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function shiftDay(ymd, deltaDays) {
-  const d = new Date(ymd + "T12:00:00.000Z");
-  d.setUTCDate(d.getUTCDate() + deltaDays);
-  return d.toISOString().slice(0, 10);
-}
-
 export default function Nutrition() {
   const { token, logout } = useAuth();
   const navigate = useNavigate();
 
-  const [day, setDay] = useState(todayYmd);
+  const [day, setDay] = useState(() => toLocalYmd());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -706,7 +697,7 @@ export default function Nutrition() {
         <button
           type="button"
           className="ff-btn-secondary"
-          onClick={() => setDay((d) => shiftDay(d, -1))}
+          onClick={() => setDay((d) => addDaysLocalYmd(d, -1))}
           aria-label="Previous day"
         >
           <IoChevronBackOutline size={18} aria-hidden />
@@ -722,7 +713,7 @@ export default function Nutrition() {
         <button
           type="button"
           className="ff-btn-secondary"
-          onClick={() => setDay((d) => shiftDay(d, 1))}
+          onClick={() => setDay((d) => addDaysLocalYmd(d, 1))}
           aria-label="Next day"
         >
           <IoChevronForwardOutline size={18} aria-hidden />
@@ -730,7 +721,7 @@ export default function Nutrition() {
         <button
           type="button"
           className="ff-btn-secondary"
-          onClick={() => setDay(todayYmd())}
+          onClick={() => setDay(toLocalYmd())}
         >
           Today
         </button>

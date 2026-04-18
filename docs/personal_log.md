@@ -16,3 +16,8 @@ Another thing to do (user related convenience):
 1) Remember me feature + authentication (database should only support 2 user without authentication, if there is more than 2 user, then database should authenticate it)
 2) Revise the UI, to make it more interesting and usable (make the logging feature more usable)
 
+TO DO (MUST DONE) April 17:
+1) create a way to make the loading time (due to render) faster
+2) figure out a way to make the login faster
+3) develop the new page: recipe builder and create a directory system that displays all recipe
+4) fix any bugs
