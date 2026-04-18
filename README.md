@@ -48,6 +48,13 @@ Open the URL Vite prints (usually [http://localhost:5173](http://localhost:5173)
 
 **If you see `EADDRINUSE` on the server:** another program is using that port. Set a different `PORT` in `server/.env` and the same base URL in `client/.env` as `VITE_API_URL`.
 
+## Authentication behavior
+
+- Access to protected API routes uses JWT bearer tokens.
+- "Remember me" keeps users signed in on that device for up to 30 days.
+- Remembered sessions use an HttpOnly cookie and server-side hashed session records.
+- If "Remember me" is not selected, auth stays session-only and is cleared when browser session ends.
+
 ## Optional: Render keepalive (free-tier friendly)
 
 This repo includes `.github/workflows/render-keepalive.yml`, which pings your Render health endpoint every 10 minutes, but only within a configurable daily time window (default: `09:00-21:00` in UTC).

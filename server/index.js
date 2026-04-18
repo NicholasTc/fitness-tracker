@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import authRouter from "./routes/auth.js";
 import profileRouter from "./routes/profile.js";
@@ -31,9 +32,11 @@ const app = express();
 app.use(
   cors({
     origin: clientOrigin,
+    credentials: true,
   }),
 );
 
+app.use(cookieParser());
 app.use(express.json({ limit: "32kb" }));
 
 app.get("/api/health", (req, res) => {

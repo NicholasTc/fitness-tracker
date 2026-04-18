@@ -2,7 +2,7 @@
 
 This document lists **what the project accommodates** and the **decisions** that lock MVP scope. It aligns with `docs/IMPLEMENTATION_STAGES.md` (how we build) and `design-proposal/` (visual and UX direction).
 
-**Last updated:** April 2, 2026 (decisions below).
+**Last updated:** April 18, 2026 (decisions below).
 
 **How we work:** If a requirement is unclear, **ask for clarification** before building. Do not invent product or data-model details that are not written here or confirmed by the product owner. See `docs/DEVELOPMENT_PROTOCOL.md`.
 
@@ -25,6 +25,7 @@ A **single place** to run your fitness life: **plan and follow workouts**, **log
 | **AI coach** | **After MVP** — not required for the first full release. |
 | **Progress** | **In MVP:** **body measurements**, **progress photos**, and **lift PR history** (alongside workouts and calorie story). |
 | **Notifications** | **None** for now (no email or push in MVP). |
+| **Login convenience** | Support **Remember me** with a **30-day device session** (HttpOnly cookie + silent refresh). Unchecked behavior stays session-only. |
 
 ---
 
@@ -44,6 +45,7 @@ These are two different ideas:
 ### 1. Accounts and security
 
 - **Register** and **login** (email + password).
+- **Remember me** option: keep users signed in for up to **30 days** on a trusted device via secure server-backed session.
 - **Separate data per user** (only two accounts expected, but data must still be isolated).
 - **Logout** and protected routes (client + server).
 - **Session identity** via JWT (or equivalent) for API calls.

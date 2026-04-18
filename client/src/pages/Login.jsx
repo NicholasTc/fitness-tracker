@@ -11,10 +11,11 @@ import {
 import "../styles/fitflow-landing.css";
 
 export default function Login() {
-  const { token, login, register } = useAuth();
+  const { token, hydrating, login, register } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -25,6 +26,7 @@ export default function Login() {
   const [signupFirst, setSignupFirst] = useState("");
   const [signupLast, setSignupLast] = useState("");
   const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [signupRememberMe, setSignupRememberMe] = useState(true);
   const [avatarIdx, setAvatarIdx] = useState(0);
   const [signupError, setSignupError] = useState(null);
   const [signupSubmitting, setSignupSubmitting] = useState(false);
@@ -52,7 +54,7 @@ export default function Login() {
     setError(null);
     setSubmitting(true);
     try {
-      await login(email, password);
+      await login(email, password, { rememberMe });
     } catch (err) {
       setError(err.message || String(err));
     } finally {
@@ -81,7 +83,7 @@ export default function Login() {
       await register(normalizedEmail, signupPassword, {
         firstName: signupFirst,
         lastName: signupLast,
-      });
+      }, { rememberMe: signupRememberMe });
       setModalOpen(false);
       setSearchParams({});
     } catch (err) {
@@ -152,6 +154,7 @@ export default function Login() {
           <div className="login-card">
             <h2>Welcome back</h2>
             <p className="sub">Sign in to your profile</p>
+            {hydrating && <p className="sub">Restoring your remembered session…</p>}
 
             <form onSubmit={handleLogin}>
               <div className="form-group">
@@ -190,7 +193,12 @@ export default function Login() {
 
               <div className="form-options">
                 <label className="remember">
-                  <input type="checkbox" defaultChecked /> Remember me
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                  />{" "}
+                  Remember me for 30 days
                 </label>
                 <span className="forgot-link" title="Not implemented in MVP">
                   Forgot password?
@@ -203,7 +211,11 @@ export default function Login() {
                 </p>
               )}
 
-              <button type="submit" className="btn btn-primary" disabled={submitting}>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={submitting || hydrating}
+              >
                 {submitting ? "Signing in…" : "Sign In"}
               </button>
             </form>
@@ -321,6 +333,15 @@ export default function Login() {
                 ))}
               </div>
             </div>
+
+            <label className="remember" style={{ marginBottom: 16 }}>
+              <input
+                type="checkbox"
+                checked={signupRememberMe}
+                onChange={(e) => setSignupRememberMe(e.target.checked)}
+              />{" "}
+              Keep me signed in on this device for 30 days
+            </label>
 
             {signupError && (
               <p className="err" role="alert">

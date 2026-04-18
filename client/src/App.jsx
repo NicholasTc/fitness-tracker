@@ -14,7 +14,10 @@ import WorkoutEditor from "./pages/WorkoutEditor.jsx";
 import WorkoutsList from "./pages/WorkoutsList.jsx";
 
 function ProtectedRoute({ children }) {
-  const { token } = useAuth();
+  const { token, hydrating } = useAuth();
+  if (hydrating) {
+    return <p className="ff-meta">Restoring session…</p>;
+  }
   if (!token) {
     return <Navigate to="/login" replace />;
   }
