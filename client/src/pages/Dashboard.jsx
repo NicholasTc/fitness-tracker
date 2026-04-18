@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { API_BASE, bearerAuth, parseJsonSafe } from "../lib/api.js";
+import { parseLocalYmd, toLocalYmd } from "../lib/date.js";
 import {
   IoBarbellOutline,
   IoCalendarOutline,
@@ -12,22 +13,18 @@ import {
   IoPlayOutline,
 } from "../icons/fitflowIonIcons.js";
 
-function todayYmd() {
-  return new Date().toISOString().slice(0, 10);
-}
-
 function monthGridBounds(year, monthIndex) {
-  const first = new Date(Date.UTC(year, monthIndex, 1));
-  const last = new Date(Date.UTC(year, monthIndex + 1, 0));
-  const pad = first.getUTCDay();
-  const gridStart = new Date(Date.UTC(year, monthIndex, 1 - pad));
-  const lastDay = last.getUTCDate();
-  const lastDow = last.getUTCDay();
+  const first = new Date(year, monthIndex, 1);
+  const last = new Date(year, monthIndex + 1, 0);
+  const pad = first.getDay();
+  const gridStart = new Date(year, monthIndex, 1 - pad);
+  const lastDay = last.getDate();
+  const lastDow = last.getDay();
   const tail = 6 - lastDow;
-  const gridEnd = new Date(Date.UTC(year, monthIndex, lastDay + tail));
+  const gridEnd = new Date(year, monthIndex, lastDay + tail);
   return {
-    start: gridStart.toISOString().slice(0, 10),
-    end: gridEnd.toISOString().slice(0, 10),
+    start: toLocalYmd(gridStart),
+    end: toLocalYmd(gridEnd),
   };
 }
 
@@ -51,7 +48,7 @@ export default function Dashboard() {
 
   const [calMonth, setCalMonth] = useState(() => {
     const n = new Date();
-    return { y: n.getUTCFullYear(), m: n.getUTCMonth() };
+    return { y: n.getFullYear(), m: n.getMonth() };
   });
   const [calWorkoutDays, setCalWorkoutDays] = useState(new Set());
 
@@ -59,7 +56,7 @@ export default function Dashboard() {
   const [toastVisible, setToastVisible] = useState(false);
   const [completedToday, setCompletedToday] = useState(() => {
     try {
-      return sessionStorage.getItem(`ff_done_${todayYmd()}`) === "1";
+      return sessionStorage.getItem(`ff_done_${toLocalYmd()}`) === "1";
     } catch {
       return false;
     }
@@ -80,7 +77,7 @@ export default function Dashboard() {
 
   const loadToday = useCallback(async () => {
     if (!token) return;
-    const day = todayYmd();
+    const day = toLocalYmd();
     setLoading(true);
     setError(null);
     try {
@@ -159,34 +156,35 @@ export default function Dashboard() {
   const miniCalCells = useMemo(() => {
     const { y, m } = calMonth;
     const { start } = monthGridBounds(y, m);
-    const [ys, ms, ds] = start.split("-").map((x) => parseInt(x, 10));
-    const gridStart = new Date(Date.UTC(ys, ms - 1, ds));
+    const gridStart = parseLocalYmd(start);
+    if (!gridStart) return [];
     const cells = [];
     for (let i = 0; i < 42; i++) {
       const d = new Date(gridStart);
-      d.setUTCDate(gridStart.getUTCDate() + i);
-      const ymd = d.toISOString().slice(0, 10);
-      const inMonth = d.getUTCMonth() === m;
-      const isToday = ymd === todayYmd();
-      cells.push({ ymd, dayNum: d.getUTCDate(), inMonth, isToday });
+      d.setDate(gridStart.getDate() + i);
+      const ymd = toLocalYmd(d);
+      const inMonth = d.getMonth() === m;
+      const isToday = ymd === toLocalYmd();
+      cells.push({ ymd, dayNum: d.getDate(), inMonth, isToday });
     }
     return cells;
   }, [calMonth]);
 
-  const monthLabel = new Date(
-    Date.UTC(calMonth.y, calMonth.m, 1),
-  ).toLocaleString("default", { month: "long", year: "numeric", timeZone: "UTC" });
+  const monthLabel = new Date(calMonth.y, calMonth.m, 1).toLocaleString("default", {
+    month: "long",
+    year: "numeric",
+  });
 
   const [upcomingRows, setUpcomingRows] = useState([]);
 
   const loadUpcoming = useCallback(async () => {
     if (!token) return;
     const start = new Date();
-    start.setUTCDate(start.getUTCDate() + 1);
+    start.setDate(start.getDate() + 1);
     const end = new Date();
-    end.setUTCDate(end.getUTCDate() + 21);
-    const a = start.toISOString().slice(0, 10);
-    const b = end.toISOString().slice(0, 10);
+    end.setDate(end.getDate() + 21);
+    const a = toLocalYmd(start);
+    const b = toLocalYmd(end);
     try {
       const res = await fetch(
         `${API_BASE}/api/calendar?start=${a}&end=${b}`,
@@ -215,7 +213,7 @@ export default function Dashboard() {
 
   function confirmComplete() {
     try {
-      sessionStorage.setItem(`ff_done_${todayYmd()}`, "1");
+      sessionStorage.setItem(`ff_done_${toLocalYmd()}`, "1");
     } catch {
       /* ignore */
     }
@@ -533,10 +531,11 @@ export default function Dashboard() {
                       />
                       <span>{u.name}</span>
                       <span className="ff-upcoming-day">
-                        {new Date(u.ymd + "T12:00:00.000Z").toLocaleDateString(
-                          "en-US",
-                          { weekday: "short", month: "short", day: "numeric" },
-                        )}
+                        {parseLocalYmd(u.ymd)?.toLocaleDateString("en-US", {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                        }) || u.ymd}
                       </span>
                     </Link>
                   ))}

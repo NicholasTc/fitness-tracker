@@ -2,10 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { API_BASE, bearerAuth, jsonAuthHeaders, parseJsonSafe } from "../lib/api.js";
-
-function todayYmd() {
-  return new Date().toISOString().slice(0, 10);
-}
+import { toLocalYmd } from "../lib/date.js";
 
 export default function Progress() {
   const { token, logout } = useAuth();
@@ -14,7 +11,7 @@ export default function Progress() {
   const [error, setError] = useState(null);
 
   const [measurements, setMeasurements] = useState([]);
-  const [mDate, setMDate] = useState(todayYmd);
+  const [mDate, setMDate] = useState(() => toLocalYmd());
   const [mWeight, setMWeight] = useState("");
   const [mWaist, setMWaist] = useState("");
   const [mFat, setMFat] = useState("");
@@ -26,13 +23,13 @@ export default function Progress() {
   const [prExercise, setPrExercise] = useState("");
   const [prWeight, setPrWeight] = useState("");
   const [prReps, setPrReps] = useState("1");
-  const [prDate, setPrDate] = useState(todayYmd);
+  const [prDate, setPrDate] = useState(() => toLocalYmd());
   const [prNotes, setPrNotes] = useState("");
   const [prSaving, setPrSaving] = useState(false);
   const [editingPrId, setEditingPrId] = useState(null);
 
   const [photos, setPhotos] = useState([]);
-  const [photoDate, setPhotoDate] = useState(todayYmd);
+  const [photoDate, setPhotoDate] = useState(() => toLocalYmd());
   const [photoCaption, setPhotoCaption] = useState("");
   const [photoFile, setPhotoFile] = useState(null);
   const [photoSaving, setPhotoSaving] = useState(false);
@@ -226,7 +223,7 @@ export default function Progress() {
     setPrExercise(row.exerciseName);
     setPrWeight(String(row.weightKg));
     setPrReps(String(row.reps));
-    setPrDate(row.achievedAt ? row.achievedAt.slice(0, 10) : todayYmd());
+    setPrDate(row.achievedAt ? row.achievedAt.slice(0, 10) : toLocalYmd());
     setPrNotes(row.notes || "");
   }
 
@@ -235,7 +232,7 @@ export default function Progress() {
     setPrExercise("");
     setPrWeight("");
     setPrReps("1");
-    setPrDate(todayYmd());
+    setPrDate(toLocalYmd());
     setPrNotes("");
   }
 

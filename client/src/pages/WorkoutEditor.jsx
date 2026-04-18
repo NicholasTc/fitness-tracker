@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { API_BASE, bearerAuth, jsonAuthHeaders, parseJsonSafe } from "../lib/api.js";
+import { toLocalYmd } from "../lib/date.js";
 import { IoChevronBackOutline } from "../icons/fitflowIonIcons.js";
 
 function emptyExercise() {
@@ -9,7 +10,7 @@ function emptyExercise() {
 }
 
 function todayInput() {
-  return new Date().toISOString().slice(0, 10);
+  return toLocalYmd();
 }
 
 export default function WorkoutEditor() {
@@ -50,7 +51,9 @@ export default function WorkoutEditor() {
       }
       setName(data.name || "");
       setDateStr(
-        data.date ? new Date(data.date).toISOString().slice(0, 10) : todayInput(),
+        typeof data.date === "string" && data.date
+          ? data.date.slice(0, 10)
+          : todayInput(),
       );
       if (data.exercises?.length) {
         setExercises(

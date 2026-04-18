@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { API_BASE, bearerAuth, jsonAuthHeaders, parseJsonSafe } from "../lib/api.js";
+import { toLocalYmd } from "../lib/date.js";
 
 export default function TemplatesList() {
   const { token, logout } = useAuth();
@@ -45,7 +46,7 @@ export default function TemplatesList() {
   }
 
   async function startFromTemplate(templateId) {
-    const dateStr = sessionDates[templateId] || new Date().toISOString().slice(0, 10);
+    const dateStr = sessionDates[templateId] || toLocalYmd();
     if (!token) return;
     setError(null);
     try {
@@ -91,7 +92,7 @@ export default function TemplatesList() {
     }
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = toLocalYmd();
 
   return (
     <div className="ff-page">

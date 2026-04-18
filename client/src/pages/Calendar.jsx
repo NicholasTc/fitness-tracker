@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.js";
 import { API_BASE, bearerAuth, parseJsonSafe } from "../lib/api.js";
+import { addDaysLocalYmd, parseLocalYmd, toLocalYmd } from "../lib/date.js";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -10,73 +11,72 @@ function ymdFromIso(iso) {
   return iso.slice(0, 10);
 }
 
-function utcTodayParts() {
+function localTodayParts() {
   const n = new Date();
-  return { year: n.getUTCFullYear(), month: n.getUTCMonth() };
+  return { year: n.getFullYear(), month: n.getMonth() };
 }
 
 /** First Sunday (ymd) of the calendar grid that contains this month; last Saturday ymd. */
 function monthGridBounds(year, monthIndex) {
-  const first = new Date(Date.UTC(year, monthIndex, 1));
-  const last = new Date(Date.UTC(year, monthIndex + 1, 0));
-  const pad = first.getUTCDay();
-  const gridStart = new Date(Date.UTC(year, monthIndex, 1 - pad));
-  const lastDay = last.getUTCDate();
-  const lastDow = last.getUTCDay();
+  const first = new Date(year, monthIndex, 1);
+  const last = new Date(year, monthIndex + 1, 0);
+  const pad = first.getDay();
+  const gridStart = new Date(year, monthIndex, 1 - pad);
+  const lastDay = last.getDate();
+  const lastDow = last.getDay();
   const tail = 6 - lastDow;
-  const gridEnd = new Date(Date.UTC(year, monthIndex, lastDay + tail));
+  const gridEnd = new Date(year, monthIndex, lastDay + tail);
   return {
-    start: gridStart.toISOString().slice(0, 10),
-    end: gridEnd.toISOString().slice(0, 10),
+    start: toLocalYmd(gridStart),
+    end: toLocalYmd(gridEnd),
   };
 }
 
 function monthCells(year, monthIndex) {
   const { start } = monthGridBounds(year, monthIndex);
-  const [ys, ms, ds] = start.split("-").map((x) => parseInt(x, 10));
-  const gridStart = new Date(Date.UTC(ys, ms - 1, ds));
+  const gridStart = parseLocalYmd(start);
+  if (!gridStart) return [];
   const cells = [];
   for (let i = 0; i < 42; i++) {
     const d = new Date(gridStart);
-    d.setUTCDate(gridStart.getUTCDate() + i);
-    const ymd = d.toISOString().slice(0, 10);
-    const inMonth = d.getUTCMonth() === monthIndex;
-    cells.push({ ymd, inMonth, dayNum: d.getUTCDate() });
+    d.setDate(gridStart.getDate() + i);
+    const ymd = toLocalYmd(d);
+    const inMonth = d.getMonth() === monthIndex;
+    cells.push({ ymd, inMonth, dayNum: d.getDate() });
   }
   return cells;
 }
 
 function sundayWeekContainingYmd(ymd) {
-  const d = new Date(ymd + "T12:00:00.000Z");
-  const dow = d.getUTCDay();
-  d.setUTCDate(d.getUTCDate() - dow);
-  return d.toISOString().slice(0, 10);
+  const d = parseLocalYmd(ymd);
+  if (!d) return "";
+  const dow = d.getDay();
+  d.setDate(d.getDate() - dow);
+  return toLocalYmd(d);
 }
 
 function weekCellsFromSunday(sundayYmd) {
-  const [ys, ms, ds] = sundayYmd.split("-").map((x) => parseInt(x, 10));
-  const start = new Date(Date.UTC(ys, ms - 1, ds));
+  const start = parseLocalYmd(sundayYmd);
+  if (!start) return [];
   const cells = [];
   for (let i = 0; i < 7; i++) {
     const d = new Date(start);
-    d.setUTCDate(start.getUTCDate() + i);
+    d.setDate(start.getDate() + i);
     cells.push({
-      ymd: d.toISOString().slice(0, 10),
-      dayNum: d.getUTCDate(),
+      ymd: toLocalYmd(d),
+      dayNum: d.getDate(),
     });
   }
   return cells;
 }
 
 function shiftMonth(year, monthIndex, delta) {
-  const d = new Date(Date.UTC(year, monthIndex + delta, 1));
-  return { year: d.getUTCFullYear(), month: d.getUTCMonth() };
+  const d = new Date(year, monthIndex + delta, 1);
+  return { year: d.getFullYear(), month: d.getMonth() };
 }
 
 function shiftWeek(sundayYmd, deltaWeeks) {
-  const d = new Date(sundayYmd + "T12:00:00.000Z");
-  d.setUTCDate(d.getUTCDate() + deltaWeeks * 7);
-  return sundayWeekContainingYmd(d.toISOString().slice(0, 10));
+  return sundayWeekContainingYmd(addDaysLocalYmd(sundayYmd, deltaWeeks * 7));
 }
 
 export default function Calendar() {
@@ -84,9 +84,9 @@ export default function Calendar() {
   const navigate = useNavigate();
 
   const [mode, setMode] = useState("month");
-  const [cursor, setCursor] = useState(() => utcTodayParts());
+  const [cursor, setCursor] = useState(() => localTodayParts());
   const [weekSunday, setWeekSunday] = useState(() =>
-    sundayWeekContainingYmd(new Date().toISOString().slice(0, 10)),
+    sundayWeekContainingYmd(toLocalYmd()),
   );
 
   const [loading, setLoading] = useState(true);
@@ -165,9 +165,10 @@ export default function Calendar() {
     [weekSunday],
   );
 
-  const titleMonth = new Date(
-    Date.UTC(cursor.year, cursor.month, 1),
-  ).toLocaleString("default", { month: "long", year: "numeric", timeZone: "UTC" });
+  const titleMonth = new Date(cursor.year, cursor.month, 1).toLocaleString("default", {
+    month: "long",
+    year: "numeric",
+  });
 
   const titleWeek = `${weekCellsList[0].ymd} → ${weekCellsList[6].ymd}`;
 
@@ -207,7 +208,7 @@ export default function Calendar() {
             <button
               type="button"
               className="ff-btn-secondary"
-              onClick={() => setCursor(utcTodayParts())}
+              onClick={() => setCursor(localTodayParts())}
             >
               Today
             </button>
@@ -234,9 +235,7 @@ export default function Calendar() {
               type="button"
               className="ff-btn-secondary"
               onClick={() =>
-                setWeekSunday(
-                  sundayWeekContainingYmd(new Date().toISOString().slice(0, 10)),
-                )
+                setWeekSunday(sundayWeekContainingYmd(toLocalYmd()))
               }
             >
               This week
