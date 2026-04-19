@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RENDER_HEALTHCHECK_URL: ${{ secrets.RENDER_HEALTHCHECK_URL }}
+      RENDER_HEALTHCHECK_URL_FALLBACK: ${{ vars.RENDER_HEALTHCHECK_URL }}
       PING_TZ: ${{ vars.PING_TZ || 'UTC' }}
       PING_START_HOUR: ${{ vars.PING_START_HOUR || '9' }}
       PING_END_HOUR: ${{ vars.PING_END_HOUR || '21' }}
@@ -17,11 +18,17 @@ jobs:
       - name: Validate configuration
         shell: bash
         run: |
-          if [ -z "${RENDER_HEALTHCHECK_URL:-}" ]; then
-            echo "Missing secret RENDER_HEALTHCHECK_URL."
-            echo "Set it to your health endpoint, e.g. https://your-app.onrender.com/api/health"
+          health_url="${RENDER_HEALTHCHECK_URL:-$RENDER_HEALTHCHECK_URL_FALLBACK}"
+          if [ -z "${health_url:-}" ]; then
+            echo "Keepalive disabled: set either secret or variable RENDER_HEALTHCHECK_URL."
+            echo "Example: https://your-app.onrender.com/api/health"
+            exit 0
+          fi
+          if ! [[ "$health_url" =~ ^https?:// ]]; then
+            echo "RENDER_HEALTHCHECK_URL must start with http:// or https://"
             exit 1
           fi
+          echo "HEALTHCHECK_URL=$health_url" >> "$GITHUB_ENV"
           if ! [[ "$PING_START_HOUR" =~ ^[0-9]{1,2}$ ]] || ! [[ "$PING_END_HOUR" =~ ^[0-9]{1,2}$ ]]; then
             echo "PING_START_HOUR and PING_END_HOUR must be integers from 0 to 23."
             exit 1
@@ -47,6 +54,6 @@ jobs:
             exit 0
           fi
 
-          echo "Pinging $RENDER_HEALTHCHECK_URL"
-          curl --fail --silent --show-error --max-time 25 "$RENDER_HEALTHCHECK_URL" > /dev/null
+          echo "Pinging $HEALTHCHECK_URL"
+          curl --fail --silent --show-error --max-time 25 "$HEALTHCHECK_URL" > /dev/null
           echo "Ping success."

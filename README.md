@@ -61,7 +61,7 @@ This repo includes `.github/workflows/render-keepalive.yml`, which pings your Re
 
 Set these in GitHub repo settings before enabling:
 
-- **Secret:** `RENDER_HEALTHCHECK_URL` (example: `https://your-app.onrender.com/api/health`)
+- **Secret (recommended) or Variable:** `RENDER_HEALTHCHECK_URL` (example: `https://your-app.onrender.com/api/health`)
 - **Variable (optional):** `PING_TZ` (example: `Asia/Kuala_Lumpur`)
 - **Variable (optional):** `PING_START_HOUR` (0-23, default `9`)
 - **Variable (optional):** `PING_END_HOUR` (0-23, default `21`)

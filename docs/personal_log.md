@@ -18,6 +18,6 @@ Another thing to do (user related convenience):
 
 TO DO (MUST DONE) April 17:
 1) create a way to make the loading time (due to render) faster (ping every 15 minutes to avoid cold start on a cheap endpoint)
-2) figure out a way to make the login faster
+2) figure out a way to make the login faster (using login token) DOONE
 3) develop the new page: recipe builder and create a directory system that displays all recipe
 4) fix any bugs
